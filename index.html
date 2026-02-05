@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal de Servicios JCyL - Simulador Profesional</title>
+    <title>Opos JCyL: Personal de Servicios</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone@7.23.12/babel.min.js"></script>
@@ -11,221 +11,201 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-       .bg-jcyl { background-color: #005691; } /* Azul institucional JCyL */
-       .text-jcyl { color: #005691; }
-       .btn-active { transform: scale(0.98); background-color: #f1f5f9; border-color: #005691; }
+       .btn-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+       .jcyl-blue { background-color: #005691; } /* Color corporativo JCyL */
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 border-t-[12px] border-[#005691]">
     <div id="root">
-        <div class="flex flex-col items-center justify-center min-h-screen">
+        <div class="flex flex-col items-center justify-center min-h-screen p-6 text-center">
             <div class="w-12 h-12 border-4 border-slate-200 border-t-[#005691] rounded-full animate-spin"></div>
-            <p class="mt-4 text-slate-500 font-bold uppercase tracking-widest text-xs">Cargando Sistema JCyL...</p>
+            <h1 class="mt-6 text-lg font-bold text-slate-700 uppercase tracking-widest">Cargando Sistema...</h1>
+            <p class="mt-2 text-sm text-slate-400">Si la pantalla no carga, revisa tu conexión o el código en GitHub.</p>
         </div>
     </div>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // BANCO DE DATOS TÉCNICO BLINDADO (Temario Personal de Servicios)
-        // Datos extraídos de exámenes reales (Calandra, Sinner, Temperaturas) 
-        const EXAM_DATABASE =,
-                answer: 1,
-                note: "La calandra es la máquina específica para el planchado de prendas planas como sábanas y mantelería ."
+        // BANCO DE DATOS REAL (Preguntas extraídas de exámenes oficiales JCyL)
+        const PREGUNTAS = [
+            {
+                id: 1,
+                bloque: "Lavandería",
+                texto: "¿En qué máquina se procesan habitualmente las sábanas para asegurar su planchado y desinfección térmica?",
+                opciones: ["En la secadora industrial", "En la calandra", "En el túnel de lavado", "En la mesa de repaso"],
+                correcta: 1,
+                explicacion: "Las sábanas y mantelería (prendas planas) se planchan obligatoriamente en la calandra."
             },
             {
-                id: "T2_01",
-                topic: "Limpieza",
-                question: "¿Qué factor del Círculo de Sinner debemos aumentar si decidimos reducir la temperatura del agua?",
-                options:,
-                answer: 2,
-                note: "El Círculo de Sinner compensa la falta de un factor (Química, Mecánica, Tiempo o Temperatura) aumentando los demás ."
+                id: 2,
+                bloque: "Limpieza",
+                texto: "Según el Círculo de Sinner, si reducimos el tiempo de actuación del producto químico, ¿qué debemos hacer?",
+                opciones:,
+                correcta: 2,
+                explicacion: "El Círculo de Sinner compensa la falta de un factor (Química, Mecánica, Tiempo o Temperatura) aumentando los demás."
             },
             {
-                id: "T3_01",
-                topic: "Comedor",
-                question: "¿A qué temperatura mínima debe mantenerse la comida caliente en el mostrador de servicio?",
-                options: ["45°C", "55°C", "65°C", "75°C"],
-                answer: 2,
-                note: "La temperatura de seguridad para evitar bacterias en alimentos calientes es superior a 65°C.[1]"
+                id: 3,
+                bloque: "Comedor",
+                texto: "¿A qué temperatura mínima debe mantenerse la comida caliente en el mostrador de servicio?",
+                opciones: ["45°C", "55°C", "65°C", "75°C"],
+                correcta: 2,
+                explicacion: "La normativa exige mantener alimentos calientes a más de 65°C para evitar bacterias."
             },
             {
-                id: "T4_01",
-                topic: "Legislación",
-                question: "¿En qué Título de la Constitución Española se regulan los derechos y deberes fundamentales?",
-                options:,
-                answer: 1,
-                note: "Los derechos fundamentales se recogen en el Título I, artículos 10 al 55.[2]"
+                id: 4,
+                bloque: "Prevención",
+                texto: "Para evitar la contaminación del aire en una lavandería, ¿qué está prohibido hacer con la ropa sucia?",
+                opciones: ["Pesarla", "Clasificarla", "Agitarla o airearla", "Cerrar las bolsas"],
+                correcta: 2,
+                explicacion: "Nunca debe agitarse la ropa sucia para no dispersar gérmenes en el ambiente."
             },
             {
-                id: "T5_01",
-                topic: "Prevención",
-                question: "Para evitar la contaminación ambiental en una lavandería, ¿qué no debe hacerse nunca con la ropa sucia?",
-                options: ["Pesarla antes del lavado", "Clasificarla por colores", "Agitarla o airearla", "Cerrar las bolsas de transporte"],
-                answer: 2,
-                note: "Nunca debe agitarse la ropa sucia para evitar la dispersión de gérmenes en el aire ."
+                id: 5,
+                bloque: "Legislación",
+                texto: "¿En qué Título de la Constitución Española se recogen los Derechos y Deberes Fundamentales?",
+                opciones:,
+                correcta: 1,
+                explicacion: "Los derechos fundamentales ocupan el Título I (artículos 10 al 55)."
             }
         ];
 
-        function OposApp() {
-            const [view, setView] = useState('menu');
-            const [mode, setMode] = useState('ordinario');
-            const [currentIdx, setCurrentIdx] = useState(0);
-            const [userAnswers, setUserAnswers] = useState({});
+        function App() {
+            const [pantalla, setPantalla] = useState('menu');
+            const = useState('ord'); // 'ord' u 'stab'
+            const [indice, setIndice] = useState(0);
+            const = useState({});
             const = useState(0);
             const = useState(false);
 
-            // Temporizador Oficial: 85 min (Ordinario/70 preg) o 47 min (Estabilización/40 preg) [3, 4]
+            // Temporizador oficial: Ordinario (85 min / 70 preg) - Estabilización (47 min / 40 preg) 
             useEffect(() => {
                 let timer;
-                if (view === 'quiz' && timeLeft > 0 &&!isDone) {
-                    timer = setInterval(() => setTimeLeft(t => t - 1), 1000);
-                } else if (timeLeft === 0 && view === 'quiz') {
-                    setIsDone(true);
-                }
+                if (pantalla === 'test' && tiempo > 0 &&!terminado) {
+                    timer = setInterval(() => setTiempo(t => t - 1), 1000);
+                } else if (tiempo === 0 && pantalla === 'test') setTerminado(true);
                 return () => clearInterval(timer);
-            },);
+            }, [pantalla, tiempo, terminado]);
 
-            const startExam = (type) => {
-                setMode(type);
-                setTimeLeft(type === 'ordinario'? 85 * 60 : 47 * 60);
-                setView('quiz');
-                setUserAnswers({});
-                setCurrentIdx(0);
-                setIsDone(false);
+            const iniciar = (m) => {
+                setTipoExamen(m);
+                setTiempo(m === 'ord'? 85 * 60 : 47 * 60);
+                setPantalla('test');
+                setRespuestas({});
+                setIndice(0);
+                setTerminado(false);
             };
 
-            const finalize = () => {
-                setIsDone(true);
-            };
-
-            const calculateResults = () => {
-                let hits = 0;
-                let fails = 0;
-                EXAM_DATABASE.forEach((q, i) => {
-                    if (userAnswers[i] === q.answer) hits++;
-                    else if (userAnswers[i]!== undefined) fails++;
+            const calcularPuntos = () => {
+                let aciertos = 0;
+                let fallos = 0;
+                PREGUNTAS.forEach((q, i) => {
+                    if (respuestas[i] === q.correcta) aciertos++;
+                    else if (respuestas[i]!== undefined) fallos++;
                 });
 
-                // Lógica de puntuación JCyL: Nota sobre 20 puntos [5, 6]
-                const totalQuestions = mode === 'ordinario'? 70 : 40;
-                const penalty = mode === 'ordinario'? 0.25 : 0.1111; // 1/4 o 1/9
-                const valuePerHit = 20 / totalQuestions;
+                // Fórmulas oficiales JCyL (Sobre 20 puntos finales)
+                const totalOficial = tipoExamen === 'ord'? 70 : 40;
+                const restaPorFallo = tipoExamen === 'ord'? 0.25 : 0.1111; // 1/4 o 1/9
+                const valorPregunta = 20 / totalOficial;
                 
-                const finalGrade = (hits - (fails * penalty)) * valuePerHit;
-                return { hits, fails, score: Math.max(0, finalGrade).toFixed(2) };
+                const notaFinal = (aciertos - (fallos * restaPorFallo)) * valorPregunta;
+                return { aciertos, fallos, score: Math.max(0, notaFinal).toFixed(2) };
             };
 
             return (
-                <div className="max-w-2xl mx-auto p-4 md:p-8 min-h-screen flex flex-col">
+                <div className="max-w-2xl mx-auto p-4 md:p-10 min-h-screen flex flex-col">
                     {/* CABECERA */}
-                    <nav className="flex justify-between items-center mb-8 pb-4 border-b">
-                        <div onClick={() => setView('menu')} className="cursor-pointer">
+                    <nav className="flex justify-between items-center mb-10 pb-4 border-b">
+                        <div className="flex flex-col">
                             <h1 className="font-black text-blue-900 text-xl tracking-tighter">OPOS JCyL</h1>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Personal de Servicios</p>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Personal de Servicios</span>
                         </div>
-                        {view!== 'menu' && (
-                            <button onClick={() => setView('menu')} className="bg-slate-200 px-4 py-1.5 rounded-full text-[10px] font-black hover:bg-[#005691] hover:text-white transition-all uppercase">Inicio</button>
+                        {pantalla!== 'menu' && (
+                            <button onClick={() => setPantalla('menu')} className="bg-slate-200 px-4 py-2 rounded-full text-[10px] font-black hover:bg-[#005691] hover:text-white transition-all">INICIO</button>
                         )}
                     </nav>
 
-                    {/* MENÚ PRINCIPAL */}
-                    {view === 'menu' && (
+                    {/* VISTA: MENÚ PRINCIPAL */}
+                    {pantalla === 'menu' && (
                         <div className="space-y-6 animate-in fade-in duration-700">
                             <div className="bg-gradient-to-br from-[#005691] to-blue-800 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
                                 <h2 className="text-3xl font-black mb-2">Simulador 2025</h2>
-                                <p className="text-blue-100 text-sm leading-relaxed">Contenidos técnicos actualizados según Resolución 22/11/2024 del BOCyL.[7]</p>
+                                <p className="text-blue-100 text-sm">Basado en la Resolución de la Junta del 29/11/2024.</p>
                                 <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-white opacity-10 rounded-full"></div>
                             </div>
                             
                             <div className="grid gap-4">
-                                <button onClick={() => startExam('ordinario')} className="flex flex-col text-left bg-white p-7 rounded-[2rem] border-2 border-slate-100 shadow-sm hover:border-[#005691] transition-all group">
-                                    <span className="font-black text-[#005691] text-lg group-hover:translate-x-1 transition-transform">Acceso Ordinario</span>
-                                    <span className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-widest">70 Preguntas / 85 min / -0.25 Error</span>
+                                <button onClick={() => iniciar('ord')} className="text-left bg-white p-7 rounded-[2rem] border-2 border-slate-100 hover:border-[#005691] transition-all group">
+                                    <span className="font-black text-[#005691] text-lg">Modo Ordinario</span>
+                                    <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-widest">70 Preguntas / 85 min / -0.25 Fallo</p>
                                 </button>
-                                <button onClick={() => startExam('estabilizacion')} className="flex flex-col text-left bg-white p-7 rounded-[2rem] border-2 border-slate-100 shadow-sm hover:border-blue-500 transition-all group">
-                                    <span className="font-black text-blue-700 text-lg group-hover:translate-x-1 transition-transform">Estabilización (EE)</span>
-                                    <span className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-widest">40 Preguntas / 47 min / -0.11 Error</span>
+                                <button onClick={() => iniciar('stab')} className="text-left bg-white p-7 rounded-[2rem] border-2 border-slate-100 hover:border-indigo-600 transition-all group">
+                                    <span className="font-black text-indigo-700 text-lg">Estabilización (EE)</span>
+                                    <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-widest">40 Preguntas / 47 min / -0.11 Fallo</p>
                                 </button>
                             </div>
                         </div>
                     )}
 
-                    {/* CUESTIONARIO */}
-                    {view === 'quiz' &&!isDone && (
-                        <div className="flex-grow animate-in slide-in-from-bottom-4 duration-500">
+                    {/* VISTA: TEST ACTIVO */}
+                    {pantalla === 'test' &&!terminado && (
+                        <div className="animate-in slide-in-from-right duration-300">
                             <div className="flex justify-between items-center mb-8">
-                                <span className="bg-blue-100 text-[#005691] text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-tighter">
-                                    {EXAM_DATABASE[currentIdx].topic}
-                                </span>
-                                <div className={`px-4 py-2 rounded-2xl flex items-center gap-2 ${timeLeft < 300? 'bg-red-100 text-red-700 animate-pulse' : 'bg-slate-100 text-slate-700'}`}>
-                                    <span className="text-lg font-mono font-black">{Math.floor(timeLeft/60)}:{String(timeLeft%60).padStart(2,'0')}</span>
+                                <span className="bg-blue-100 text-[#005691] text-[10px] font-black px-4 py-1.5 rounded-full uppercase">{PREGUNTAS[indice].bloque}</span>
+                                <div className={`px-4 py-2 rounded-2xl ${tiempo < 300? 'bg-red-100 text-red-700 animate-pulse' : 'bg-slate-100 text-slate-700'}`}>
+                                    <span className="text-lg font-mono font-black">{Math.floor(tiempo/60)}:{String(tiempo%60).padStart(2,'0')}</span>
                                 </div>
                             </div>
 
                             <div className="mb-10">
-                                <div className="text-[#005691] text-[10px] font-black mb-2 uppercase tracking-widest">Pregunta {currentIdx + 1} de {EXAM_DATABASE.length}</div>
-                                <h3 className="text-2xl font-bold leading-tight text-slate-900 tracking-tight">{EXAM_DATABASE[currentIdx].question}</h3>
+                                <div className="text-blue-600 text-[10px] font-black mb-2 uppercase tracking-widest">Pregunta {indice + 1} de {PREGUNTAS.length}</div>
+                                <h3 className="text-2xl font-bold leading-tight text-slate-900">{PREGUNTAS[indice].texto}</h3>
                             </div>
 
                             <div className="space-y-4">
-                                {EXAM_DATABASE[currentIdx].options.map((option, i) => (
-                                    <button key={i} onClick={() => setUserAnswers({...userAnswers, [currentIdx]: i})}
-                                        className={`w-full text-left p-6 rounded-[1.8rem] border-2 transition-all duration-200 font-bold flex items-center gap-4 ${userAnswers[currentIdx] === i? 'border-[#005691] bg-blue-50 shadow-md scale-[1.01]' : 'border-slate-100 bg-white hover:border-slate-300'}`}>
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${userAnswers[currentIdx] === i? 'bg-[#005691] text-white' : 'bg-slate-100 text-slate-400'}`}>
-                                            {String.fromCharCode(65+i)}
-                                        </div>
-                                        <span className="text-sm">{option}</span>
+                                {PREGUNTAS[indice].opciones.map((op, i) => (
+                                    <button key={i} onClick={() => setRespuestas({...respuestas, [indice]: i})}
+                                        className={`w-full text-left p-6 rounded-[1.8rem] border-2 transition-all font-bold flex items-center gap-4 ${respuestas[indice] === i? 'border-[#005691] bg-blue-50 shadow-md scale-[1.01]' : 'border-slate-100 bg-white hover:border-slate-300'}`}>
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${respuestas[indice] === i? 'bg-[#005691] text-white' : 'bg-slate-100 text-slate-400'}`}>{String.fromCharCode(65+i)}</div>
+                                        <span className="text-sm">{op}</span>
                                     </button>
                                 ))}
                             </div>
 
                             <div className="flex justify-between mt-12 pt-8 border-t">
-                                <button disabled={currentIdx === 0} onClick={() => setCurrentIdx(currentIdx - 1)} className="text-slate-400 font-black uppercase text-[10px] disabled:opacity-0 px-4">Anterior</button>
-                                {currentIdx < EXAM_DATABASE.length - 1? (
-                                    <button onClick={() => setCurrentIdx(currentIdx + 1)} className="bg-[#005691] text-white px-10 py-4 rounded-2xl font-black shadow-xl hover:bg-blue-900 transition-all text-xs uppercase tracking-widest">Siguiente</button>
-                                ) : (
-                                    <button onClick={finalize} className="bg-green-600 text-white px-10 py-4 rounded-2xl font-black shadow-xl hover:bg-green-700 transition-all text-xs uppercase tracking-widest">Finalizar</button>
-                                )}
+                                <button disabled={indice === 0} onClick={() => setIndice(indice - 1)} className="text-slate-400 font-black uppercase text-[10px] disabled:opacity-0 px-4">Anterior</button>
+                                {indice < PREGUNTAS.length - 1? 
+                                    <button onClick={() => setIndice(indice + 1)} className="bg-[#005691] text-white px-10 py-4 rounded-2xl font-black shadow-xl hover:bg-blue-900 transition-all text-[10px] uppercase">Siguiente</button> : 
+                                    <button onClick={() => setTerminado(true)} className="bg-green-600 text-white px-10 py-4 rounded-2xl font-black shadow-xl hover:bg-green-700 transition-all text-[10px] uppercase tracking-widest">Finalizar</button>
+                                }
                             </div>
                         </div>
                     )}
 
-                    {/* RESULTADOS */}
-                    {isDone && (
-                        <div className="text-center py-12 animate-in zoom-in duration-500 flex flex-col items-center">
-                            <p className="text-slate-400 font-black uppercase tracking-widest text-[10px] mb-2">Nota proyectada sobre 20</p>
-                            <div className="text-9xl font-black text-[#005691] leading-none tracking-tighter mb-10">{calculateResults().score}</div>
-                            
-                            <div className="grid grid-cols-2 gap-4 w-full max-w-sm mb-12">
-                                <div className="bg-green-100 p-6 rounded-[2rem] text-green-700">
-                                    <div className="text-3xl font-black">{calculateResults().hits}</div>
-                                    <div className="text-[10px] font-black uppercase tracking-widest">Aciertos</div>
+                    {/* VISTA: RESULTADOS */}
+                    {terminado && (
+                        <div className="text-center py-12 animate-in zoom-in duration-500">
+                            <p className="text-slate-400 font-black uppercase tracking-widest text-[10px] mb-2">Nota sobre 20 puntos</p>
+                            <div className="text-9xl font-black text-[#005691] leading-none tracking-tighter mb-10">{calcularPuntos().score}</div>
+                            <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto mb-12">
+                                <div className="bg-green-100 p-6 rounded-[2rem] text-green-700 font-black uppercase tracking-widest text-[10px]">
+                                    <div className="text-3xl">{calcularPuntos().aciertos}</div> Aciertos
                                 </div>
-                                <div className="bg-red-100 p-6 rounded-[2rem] text-red-700">
-                                    <div className="text-3xl font-black">{calculateResults().fails}</div>
-                                    <div className="text-[10px] font-black uppercase tracking-widest">Errores</div>
+                                <div className="bg-red-100 p-6 rounded-[2rem] text-red-700 font-black uppercase tracking-widest text-[10px]">
+                                    <div className="text-3xl">{calcularPuntos().fallos}</div> Errores
                                 </div>
                             </div>
-
-                            <button onClick={() => setView('menu')} className="w-full max-w-xs bg-slate-900 text-white py-5 rounded-3xl font-black shadow-2xl hover:bg-[#005691] transition-all uppercase tracking-widest text-[10px]">Volver al Menú</button>
+                            <button onClick={() => setPantalla('menu')} className="w-full max-w-xs bg-slate-900 text-white py-5 rounded-3xl font-black shadow-2xl hover:bg-[#005691] transition-all uppercase text-[10px] tracking-widest">Cerrar Sesión</button>
                         </div>
                     )}
-
-                    {/* PIE DE PÁGINA */}
-                    <footer className="mt-auto text-center border-t pt-10 pb-4">
-                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em] leading-relaxed">
-                            Simulador Pedagógico Personal de Servicios JCyL  · Contenido Gratuito Sin Vinculación Oficial.
-                        </p>
-                    </footer>
                 </div>
             );
         }
 
-        // Renderizado Final con Control de Raíz
-        const container = document.getElementById('root');
-        const root = ReactDOM.createRoot(container);
-        root.render(<OposApp />);
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
