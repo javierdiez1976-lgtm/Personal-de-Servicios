@@ -14,13 +14,16 @@
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 border-t-8 border-blue-700">
-    <div id="root"></div>
+    <div id="root">
+        <div class="flex items-center justify-center min-h-screen text-slate-400">
+            Cargando simulador... (Si ves esta pantalla mucho tiempo, revisa tu código en GitHub)
+        </div>
+    </div>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
 
         // BANCO DE DATOS TÉCNICO VERIFICADO (BOCyL 2024-2025)
-        // Revisión de puntuación: Todos los corchetes y llaves {} están correctamente cerrados.
         const EXAM_DATA = [
             {
                 id: "LAV_01",
@@ -122,7 +125,7 @@
                     </header>
 
                     {view === 'home' && (
-                        <div className="space-y-6">
+                        <div className="space-y-6 animate-in fade-in duration-500">
                             <div className="bg-gradient-to-br from-blue-700 to-indigo-800 p-8 md:p-12 rounded-[2rem] text-white shadow-2xl">
                                 <h2 className="text-3xl font-black mb-3">Simulador JCyL 2025</h2>
                                 <p className="text-blue-100 text-sm">Contenidos actualizados según Resolución 22/11/2024.</p>
@@ -164,8 +167,8 @@
                             <div className="flex justify-between mt-12 pt-8 border-t border-slate-200">
                                 <button disabled={current === 0} onClick={() => setCurrent(current - 1)} className="text-slate-400 font-black uppercase text-xs disabled:opacity-0">ANTERIOR</button>
                                 {current < EXAM_DATA.length - 1? 
-                                    <button onClick={() => setCurrent(current + 1)} className="bg-blue-700 text-white px-12 py-4 rounded-2xl font-black shadow-xl transition-all text-sm uppercase">SIGUIENTE</button> : 
-                                    <button onClick={() => setFinished(true)} className="bg-green-600 text-white px-12 py-4 rounded-2xl font-black shadow-xl transition-all text-sm uppercase tracking-widest">FINALIZAR</button>
+                                    <button onClick={() => setCurrent(current + 1)} className="bg-blue-700 text-white px-12 py-4 rounded-2xl font-black shadow-xl hover:bg-blue-800 transition-all text-sm uppercase">SIGUIENTE</button> : 
+                                    <button onClick={() => setFinished(true)} className="bg-green-600 text-white px-12 py-4 rounded-2xl font-black shadow-xl hover:bg-green-700 transition-all text-sm uppercase tracking-widest">FINALIZAR</button>
                                 }
                             </div>
                         </div>
