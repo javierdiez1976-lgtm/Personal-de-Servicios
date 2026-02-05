@@ -4,26 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Opos JCyL: Personal de Servicios</title>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+       .thumb-zone { min-height: 48px; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 border-t-8 border-blue-700">
     <div id="root">
         <div class="flex items-center justify-center min-h-screen text-slate-400">
-            Cargando simulador... (Si ves esta pantalla mucho tiempo, revisa tu código en GitHub)
+            Cargando simulador... si la pantalla sigue en blanco, revisa la conexión.
         </div>
     </div>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // BANCO DE DATOS TÉCNICO VERIFICADO (BOCyL 2024-2025)
+        // BANCO DE PREGUNTAS VERIFICADO (BOCyL 2024-2025)
+        // Cada objeto está revisado para evitar errores de sintaxis en comas y llaves.
         const EXAM_DATA = [
             {
                 id: "LAV_01",
@@ -31,15 +33,15 @@
                 question: "¿En qué máquina se procesan habitualmente las sábanas para asegurar su planchado y desinfección térmica?",
                 options: ["En la secadora industrial", "En la calandra", "En el túnel de lavado", "En la mesa de repaso"],
                 correct: 1,
-                note: "Las sábanas y mantelería (prendas planas) se planchan en la calandra."
+                note: "Las sábanas y mantelería (prendas planas) se planchan en la calandra para desinfectarlas."
             },
             {
                 id: "LIM_01",
                 category: "Limpieza",
-                question: "¿Cuál de estos factores NO forma parte del Círculo de Sinner?",
+                question: "¿Qué factor del Círculo de Sinner debemos aumentar si decidimos reducir la temperatura del agua?",
                 options:,
                 correct: 2,
-                note: "El Círculo de Sinner lo componen: Química, Mecánica, Tiempo y Temperatura."
+                note: "El Círculo de Sinner compensa la falta de un factor aumentando los demás para mantener la eficacia."
             },
             {
                 id: "COM_01",
@@ -47,7 +49,15 @@
                 question: "¿A qué temperatura mínima debe mantenerse la comida caliente en el mostrador de servicio?",
                 options: ["45°C", "55°C", "65°C", "75°C"],
                 correct: 2,
-                note: "La temperatura de seguridad para alimentos calientes debe ser superior a 65°C."
+                note: "La temperatura de seguridad alimentaria para platos calientes debe ser superior a 65°C."
+            },
+            {
+                id: "PRL_01",
+                category: "Prevención",
+                question: "Para evitar la contaminación ambiental en una lavandería, ¿qué no debe hacerse nunca con la ropa sucia?",
+                options: ["Pesarla antes del lavado", "Clasificarla por colores", "Agitarla o airearla", "Cerrar las bolsas de transporte"],
+                correct: 2,
+                note: "Nunca debe agitarse la ropa sucia para evitar dispersar microorganismos en el aire."
             },
             {
                 id: "LEG_01",
@@ -55,31 +65,24 @@
                 question: "¿En qué Título de la Constitución Española se regulan los derechos y deberes fundamentales?",
                 options:,
                 correct: 1,
-                note: "Los derechos fundamentales se recogen en el Título I (Arts. 10 al 55)."
-            },
-            {
-                id: "PRL_01",
-                category: "Prevención",
-                question: "Para evitar la contaminación ambiental en una lavandería, ¿qué no debe hacerse nunca con la ropa sucia?",
-                options: ["Pesarla antes del lavado", "Clasificarla por colores", "Agitarla o airearla", "Cerrar las bolsas"],
-                correct: 2,
-                note: "Nunca debe agitarse la ropa sucia para evitar la dispersión de gérmenes en el aire."
+                note: "Los derechos y deberes fundamentales se recogen en el Título I (artículos 10 al 55)."
             }
         ];
 
         function App() {
             const [view, setView] = useState('home');
-            const [mode, setMode] = useState('ord'); 
+            const [mode, setMode] = useState('ord'); // 'ord' (Ordinario) o 'stab' (Estabilización)
             const [current, setCurrent] = useState(0);
             const [answers, setAnswers] = useState({});
             const = useState(0);
             const [finished, setFinished] = useState(false);
 
+            // Temporizador Oficial JCyL: 85 min (Ordinario) o 47 min (Estabilización)
             useEffect(() => {
                 let timer;
                 if (view === 'quiz' && timeLeft > 0 &&!finished) {
                     timer = setInterval(() => setTimeLeft(t => t - 1), 1000);
-                } else if (timeLeft === 0 && view === 'quiz') {
+                } else if (timeLeft === 0 && view === 'quiz' &&!finished) {
                     setFinished(true);
                 }
                 return () => clearInterval(timer);
@@ -87,7 +90,6 @@
 
             const startExam = (m) => {
                 setMode(m);
-                // Tiempos oficiales JCyL: 85 min (Ordinario) o 47 min (Estabilización)
                 setTimeLeft(m === 'ord'? 85 * 60 : 47 * 60);
                 setView('quiz');
                 setAnswers({});
@@ -103,7 +105,7 @@
                     else if (answers[i]!== undefined) fails++;
                 });
 
-                // Fórmulas oficiales: nota máxima 20 puntos
+                // Lógica oficial: Proporcional a 70 o 40 preguntas para dar nota sobre 20 puntos
                 const totalQuestions = mode === 'ord'? 70 : 40;
                 const penaltyFactor = mode === 'ord'? 0.25 : 0.1111; 
                 const pointsPerHit = 20 / totalQuestions;
@@ -128,15 +130,15 @@
                         <div className="space-y-6 animate-in fade-in duration-500">
                             <div className="bg-gradient-to-br from-blue-700 to-indigo-800 p-8 md:p-12 rounded-[2rem] text-white shadow-2xl">
                                 <h2 className="text-3xl font-black mb-3">Simulador JCyL 2025</h2>
-                                <p className="text-blue-100 text-sm">Contenidos actualizados según Resolución 22/11/2024.</p>
+                                <p className="text-blue-100 text-sm">Contenidos técnicos según la Resolución de 22 de noviembre de 2024.</p>
                             </div>
                             <div className="grid md:grid-cols-2 gap-4">
-                                <button onClick={() => startExam('ord')} className="w-full text-left bg-white p-8 rounded-3xl border-2 border-slate-100 shadow-sm hover:border-blue-600 transition-all">
-                                    <div className="font-black text-blue-700 text-xl">Modo Ordinario</div>
+                                <button onClick={() => startExam('ord')} className="w-full text-left bg-white p-8 rounded-3xl border-2 border-slate-100 shadow-sm hover:border-blue-600 transition-all group thumb-zone">
+                                    <div className="font-black text-blue-700 text-xl group-hover:translate-x-1 transition-transform">Modo Ordinario</div>
                                     <p className="text-[10px] text-slate-500 mt-2 uppercase tracking-widest">70 preg / 85 min / -0.25 fallo</p>
                                 </button>
-                                <button onClick={() => startExam('stab')} className="w-full text-left bg-white p-8 rounded-3xl border-2 border-slate-100 shadow-sm hover:border-indigo-600 transition-all">
-                                    <div className="font-black text-indigo-700 text-xl">Estabilización</div>
+                                <button onClick={() => startExam('stab')} className="w-full text-left bg-white p-8 rounded-3xl border-2 border-slate-100 shadow-sm hover:border-indigo-600 transition-all group thumb-zone">
+                                    <div className="font-black text-indigo-700 text-xl group-hover:translate-x-1 transition-transform">Estabilización</div>
                                     <p className="text-[10px] text-slate-500 mt-2 uppercase tracking-widest">40 preg / 47 min / -0.11 fallo</p>
                                 </button>
                             </div>
@@ -144,11 +146,13 @@
                     )}
 
                     {view === 'quiz' &&!finished && (
-                        <div>
+                        <div className="animate-in slide-in-from-bottom-4 duration-300">
                             <div className="flex justify-between items-center mb-8">
                                 <span className="bg-blue-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-tighter">{EXAM_DATA[current].category}</span>
-                                <div className="bg-slate-100 px-4 py-2 rounded-2xl">
-                                    <span className="text-lg font-mono font-black text-slate-700">{Math.floor(timeLeft/60)}:{String(timeLeft%60).padStart(2,'0')}</span>
+                                <div className="bg-slate-100 px-4 py-2 rounded-2xl flex items-center gap-2">
+                                    <span className="text-lg font-mono font-black text-slate-700">
+                                        {Math.floor(timeLeft/60)}:{String(timeLeft%60).padStart(2,'0')}
+                                    </span>
                                 </div>
                             </div>
                             <div className="mb-10">
@@ -158,27 +162,27 @@
                             <div className="space-y-4">
                                 {EXAM_DATA[current].options.map((option, i) => (
                                     <button key={i} onClick={() => setAnswers({...answers, [current]: i})}
-                                        className={`w-full text-left p-6 rounded-[1.5rem] border-2 transition-all font-bold flex items-center gap-4 ${answers[current] === i? 'border-blue-600 bg-blue-50 shadow-lg' : 'border-slate-100 bg-white hover:border-blue-200'}`}>
+                                        className={`w-full text-left p-6 rounded-[1.5rem] border-2 transition-all duration-200 font-bold flex items-center gap-4 ${answers[current] === i? 'border-blue-600 bg-blue-50 shadow-lg scale-[1.01]' : 'border-slate-100 bg-white hover:border-blue-200'}`}>
                                         <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${answers[current] === i? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'}`}>{String.fromCharCode(65+i)}</div>
                                         <span>{option}</span>
                                     </button>
                                 ))}
                             </div>
                             <div className="flex justify-between mt-12 pt-8 border-t border-slate-200">
-                                <button disabled={current === 0} onClick={() => setCurrent(current - 1)} className="text-slate-400 font-black uppercase text-xs disabled:opacity-0">ANTERIOR</button>
+                                <button disabled={current === 0} onClick={() => setCurrent(current - 1)} className="text-slate-400 font-black uppercase text-xs disabled:opacity-0 thumb-zone">ANTERIOR</button>
                                 {current < EXAM_DATA.length - 1? 
-                                    <button onClick={() => setCurrent(current + 1)} className="bg-blue-700 text-white px-12 py-4 rounded-2xl font-black shadow-xl hover:bg-blue-800 transition-all text-sm uppercase">SIGUIENTE</button> : 
-                                    <button onClick={() => setFinished(true)} className="bg-green-600 text-white px-12 py-4 rounded-2xl font-black shadow-xl hover:bg-green-700 transition-all text-sm uppercase tracking-widest">FINALIZAR</button>
+                                    <button onClick={() => setCurrent(current + 1)} className="bg-blue-700 text-white px-12 py-4 rounded-2xl font-black shadow-xl hover:bg-blue-800 transition-all text-sm uppercase thumb-zone">SIGUIENTE</button> : 
+                                    <button onClick={() => setFinished(true)} className="bg-green-600 text-white px-12 py-4 rounded-2xl font-black shadow-xl hover:bg-green-700 transition-all text-sm uppercase tracking-widest thumb-zone">FINALIZAR</button>
                                 }
                             </div>
                         </div>
                     )}
 
                     {finished && (
-                        <div className="text-center py-12">
+                        <div className="text-center py-12 animate-in zoom-in duration-500">
                             <div className="text-slate-400 font-black uppercase tracking-widest text-[10px] mb-2">Resultado sobre 20 puntos</div>
                             <div className="text-9xl font-black text-blue-700 mb-8 leading-none tracking-tighter">{calculateResults().finalScore}</div>
-                            <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-12">
+                            <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-12 text-center">
                                 <div className="bg-green-100 p-6 rounded-[2rem] text-green-700">
                                     <div className="text-3xl font-black">{calculateResults().hits}</div>
                                     <div className="text-[10px] font-black uppercase tracking-widest">Aciertos</div>
@@ -201,7 +205,8 @@
             );
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
         root.render(<App />);
     </script>
 </body>
