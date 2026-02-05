@@ -8,52 +8,83 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
 </head>
-<body class="bg-gray-50 text-slate-900 font-sans border-t-8 border-blue-700">
+<body class="bg-slate-50 text-slate-900 border-t-8 border-blue-700">
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        const EXAM_DATA =,
-                correct: 0,
-                note: "Las prendas planas se procesan en la calandra para asegurar el planchado y la desinfección térmica."
+        // BANCO DE PREGUNTAS REALES (Basado en convocatorias oficiales JCyL)
+        const EXAM_DATA = [
+            {
+                id: "LAV_01",
+                category: "Lavandería",
+                question: "¿En qué máquina se planchan habitualmente las sábanas y prendas planas en una lavandería industrial?",
+                options: ["En la secadora de tambor", "En la calandra", "En el túnel de lavado", "Manualmente con vapor"],
+                correct: 1,
+                note: "Las sábanas y mantelería se procesan en la calandra para asegurar un acabado liso y desinfectado."
             },
             {
                 id: "LIM_01",
                 category: "Limpieza",
-                question: "¿Qué significa el pictograma de un rombo rojo con una calavera?",
+                question: "¿Qué son los tensioactivos en el contexto de los productos de limpieza?",
                 options:,
-                correct: 2,
-                note: "Según el sistema GHS/CLP, la calavera indica toxicidad aguda (peligro de muerte)."
+                correct: 1,
+                note: "Los tensioactivos facilitan que el agua penetre en la suciedad y la desprenda de la superficie."
             },
             {
                 id: "COM_01",
                 category: "Comedor",
-                question: "¿Cuál es la temperatura de seguridad para mantener alimentos calientes?",
-                options: ["Más de 45°C", "Más de 55°C", "Más de 65°C", "Más de 75°C"],
+                question: "¿Cómo se denomina el material grueso y absorbente que se coloca debajo del mantel para proteger la mesa y amortiguar ruidos?",
+                options: ["Fieltro", "Muletón", "Cubremantel", "Lencería base"],
+                correct: 1,
+                note: "El muletón protege la mesa del calor, evita ruidos y absorbe posibles derrames."
+            },
+            {
+                id: "PRL_01",
+                category: "Prevención",
+                question: "Para evitar la contaminación ambiental en una lavandería, ¿qué no debe hacerse nunca con la ropa sucia?",
+                options: ["Pesarla antes del lavado", "Clasificarla por colores", "Agitarla o airearla", "Cerrar las bolsas de transporte"],
                 correct: 2,
-                note: "Se debe mantener por encima de 65°C para evitar la proliferación de bacterias."
+                note: "Nunca debe agitarse la ropa sucia para evitar la dispersión de microorganismos en el aire."
+            },
+            {
+                id: "SYM_01",
+                category: "Simbología",
+                question: "Según la norma ISO 3758, ¿qué significa el símbolo de un triángulo con dos rayas oblicuas en su interior?",
+                options: ["Permite blanqueado con cloro (lejía)", "Permite solo blanqueadores oxigenados (sin cloro)", "No permite ningún tipo de blanqueado", "Lavar a mano"],
+                correct: 1,
+                note: "Las dos rayas indican que solo se permiten blanqueadores de oxígeno/sin cloro."
             }
         ];
 
         function App() {
             const [view, setView] = useState('home');
-            const [mode, setMode] = useState('ord');
+            const [mode, setMode] = useState('ord'); // 'ord' u 'stab'
             const [current, setCurrent] = useState(0);
             const [answers, setAnswers] = useState({});
             const = useState(0);
             const [finished, setFinished] = useState(false);
 
+            // Temporizador oficial JCyL
             useEffect(() => {
+                let timer;
                 if (view === 'quiz' && timeLeft > 0 &&!finished) {
-                    const timer = setInterval(() => setTimeLeft(t => t - 1), 1000);
-                    return () => clearInterval(timer);
-                } else if (timeLeft === 0 && view === 'quiz') setFinished(true);
+                    timer = setInterval(() => setTimeLeft(t => t - 1), 1000);
+                } else if (timeLeft === 0 && view === 'quiz') {
+                    setFinished(true);
+                }
+                return () => clearInterval(timer);
             }, [view, timeLeft, finished]);
 
             const startExam = (m) => {
                 setMode(m);
+                // 85 min para ordinario (70 preg), 47 min para estabilización (40 preg)
                 setTimeLeft(m === 'ord'? 85 * 60 : 47 * 60);
                 setView('quiz');
                 setAnswers({});
@@ -61,81 +92,120 @@
                 setFinished(false);
             };
 
-            const speak = (t) => {
-                const utter = new SpeechSynthesisUtterance(t);
-                utter.lang = 'es-ES';
-                window.speechSynthesis.speak(utter);
-            };
-
             const getResults = () => {
-                let hits = 0; let fails = 0;
+                let hits = 0;
+                let fails = 0;
+                // Penalización oficial: 1/4 (0.25) en Ordinario y 1/9 (0.11) en Estabilización
                 const penalty = mode === 'ord'? 0.25 : 0.11;
+                
                 EXAM_DATA.forEach((q, i) => {
                     if (answers[i] === q.correct) hits++;
                     else if (answers[i]!== undefined) fails++;
                 });
-                return (hits - (fails * penalty)).toFixed(2);
+
+                const score = (hits - (fails * penalty)).toFixed(2);
+                return { hits, fails, score };
             };
 
             return (
-                <div class="max-w-xl mx-auto p-6">
-                    <header class="flex justify-between items-center mb-8 pb-4 border-b">
-                        <h1 class="font-black text-blue-800 uppercase tracking-tighter">Opos JCyL Servicios</h1>
-                        <button onClick={() => setView('home')} class="bg-gray-100 px-4 py-2 rounded-full text-xs font-bold">Inicio</button>
+                <div className="max-w-2xl mx-auto p-4 md:p-10">
+                    <header className="flex justify-between items-center mb-10 pb-4 border-b-2 border-slate-200">
+                        <div className="flex flex-col">
+                            <h1 className="font-black text-blue-800 uppercase text-xl leading-none tracking-tighter text-blue-900">Opos JCyL</h1>
+                            <span className="text-[10px] font-bold text-slate-400 tracking-widest uppercase">Personal de Servicios</span>
+                        </div>
+                        <button onClick={() => setView('home')} className="bg-slate-200 px-5 py-2 rounded-full text-xs font-black hover:bg-blue-600 hover:text-white transition-all">INICIO</button>
                     </header>
 
                     {view === 'home' && (
-                        <div class="space-y-6">
-                            <div class="bg-blue-50 p-6 rounded-2xl border border-blue-100">
-                                <h2 class="text-xl font-bold text-blue-900">Preparación 2024-2025</h2>
-                                <p class="text-sm text-blue-700">Acceso gratuito al temario oficial JCyL.</p>
+                        <div className="space-y-6 animate-in fade-in duration-500">
+                            <div className="bg-gradient-to-br from-blue-700 to-indigo-800 p-8 md:p-12 rounded-[2rem] text-white shadow-2xl relative overflow-hidden">
+                                <h2 className="text-3xl font-black mb-3">Preparación Gratuita 2024-2025</h2>
+                                <p className="text-blue-100 text-sm md:text-base max-w-sm">Cuestionarios técnicos basados en las últimas resoluciones del BOCyL.</p>
+                                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
                             </div>
-                            <button onClick={() => startExam('ord')} class="w-full text-left bg-blue-700 text-white p-6 rounded-2xl shadow-lg">
-                                <div class="font-bold text-lg">Examen Ordinario</div>
-                                <div class="text-xs opacity-80">70 preguntas / 85 min / -0.25 error</div>
-                            </button>
-                            <button onClick={() => startExam('stab')} class="w-full text-left bg-indigo-600 text-white p-6 rounded-2xl shadow-lg">
-                                <div class="font-bold text-lg">Estabilización (EE)</div>
-                                <div class="text-xs opacity-80">40 preguntas / 47 min / -0.11 error</div>
-                            </button>
+                            
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <button onClick={() => startExam('ord')} className="group w-full text-left bg-white p-8 rounded-3xl border-2 border-slate-100 shadow-sm hover:border-blue-600 transition-all">
+                                    <div className="font-black text-blue-700 text-xl group-hover:translate-x-1 transition-transform">Modo Ordinario</div>
+                                    <p className="text-xs text-slate-500 mt-2 font-medium uppercase tracking-widest">70 preg / 85 min / -0.25 fallo</p>
+                                </button>
+                                <button onClick={() => startExam('stab')} className="group w-full text-left bg-white p-8 rounded-3xl border-2 border-slate-100 shadow-sm hover:border-indigo-600 transition-all">
+                                    <div className="font-black text-indigo-700 text-xl group-hover:translate-x-1 transition-transform">Estabilización</div>
+                                    <p className="text-xs text-slate-500 mt-2 font-medium uppercase tracking-widest">40 preg / 47 min / -0.11 fallo</p>
+                                </button>
+                            </div>
                         </div>
                     )}
 
                     {view === 'quiz' &&!finished && (
-                        <div>
-                            <div class="flex justify-between text-xs font-bold mb-4">
-                                <span class="text-blue-600 uppercase">{EXAM_DATA[current].category}</span>
-                                <span class="text-red-600 font-mono text-lg">{Math.floor(timeLeft/60)}:{String(timeLeft%60).padStart(2,'0')}</span>
+                        <div className="animate-in slide-in-from-bottom-4 duration-300">
+                            <div className="flex justify-between items-center mb-8">
+                                <span className="bg-blue-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-tighter">
+                                    {EXAM_DATA[current].category}
+                                </span>
+                                <div className={`flex items-center gap-2 px-4 py-2 rounded-2xl ${timeLeft < 300? 'bg-red-100 text-red-700 animate-pulse' : 'bg-slate-100 text-slate-700'}`}>
+                                    <span className="text-lg font-mono font-black">
+                                        {Math.floor(timeLeft/60)}:{String(timeLeft%60).padStart(2,'0')}
+                                    </span>
+                                </div>
                             </div>
-                            <h3 class="text-lg font-bold mb-6">{EXAM_DATA[current].question}</h3>
-                            <div class="space-y-3">
-                                {EXAM_DATA[current].options.map((o, i) => (
-                                    <button key={i} onClick={() => setAnswers({...answers, [current]: i})}
-                                        class={`w-full text-left p-4 rounded-xl border-2 transition ${answers[current] === i? 'border-blue-600 bg-blue-50' : 'border-gray-100 bg-white'}`}>
-                                        <span class="font-black mr-2 text-blue-700">{String.fromCharCode(65+i)})</span> {o}
+                            
+                            <div className="mb-10">
+                                <div className="text-blue-600 text-xs font-black mb-2 uppercase tracking-widest">Pregunta {current + 1} de {EXAM_DATA.length}</div>
+                                <h3 className="text-2xl font-bold leading-tight text-slate-900">{EXAM_DATA[current].question}</h3>
+                            </div>
+
+                            <div className="space-y-4">
+                                {EXAM_DATA[current].options.map((option, i) => (
+                                    <button 
+                                        key={i} 
+                                        onClick={() => setAnswers({...answers, [current]: i})}
+                                        className={`w-full text-left p-6 rounded-[1.5rem] border-2 transition-all duration-200 font-bold flex items-center gap-4 ${answers[current] === i? 'border-blue-600 bg-blue-50 shadow-lg scale-[1.01]' : 'border-slate-100 bg-white hover:border-blue-200'}`}
+                                    >
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-black ${answers[current] === i? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
+                                            {String.fromCharCode(65+i)}
+                                        </div>
+                                        <span>{option}</span>
                                     </button>
                                 ))}
                             </div>
-                            <div class="flex justify-between mt-8">
-                                <button disabled={current === 0} onClick={() => setCurrent(current-1)} class="text-gray-400 font-bold disabled:opacity-0">ANTERIOR</button>
-                                {current < EXAM_DATA.length - 1 
-                                   ? <button onClick={() => setCurrent(current+1)} class="bg-blue-700 text-white px-8 py-3 rounded-xl font-bold">SIGUIENTE</button>
-                                    : <button onClick={() => setFinished(true)} class="bg-green-600 text-white px-8 py-3 rounded-xl font-bold">FINALIZAR</button>
-                                }
+
+                            <div className="flex justify-between mt-12 pt-8 border-t border-slate-200">
+                                <button disabled={current === 0} onClick={() => setCurrent(current - 1)} className="text-slate-400 font-black uppercase text-xs disabled:opacity-0">ANTERIOR</button>
+                                {current < EXAM_DATA.length - 1? (
+                                    <button onClick={() => setCurrent(current + 1)} className="bg-blue-700 text-white px-12 py-4 rounded-2xl font-black shadow-xl hover:bg-blue-800 transition-all text-sm uppercase">SIGUIENTE</button>
+                                ) : (
+                                    <button onClick={() => setFinished(true)} className="bg-green-600 text-white px-12 py-4 rounded-2xl font-black shadow-xl hover:bg-green-700 transition-all text-sm uppercase tracking-widest">FINALIZAR EXAMEN</button>
+                                )}
                             </div>
                         </div>
                     )}
 
                     {finished && (
-                        <div class="text-center py-10">
-                            <h2 class="text-sm font-bold text-gray-400 uppercase">Nota Final</h2>
-                            <div class="text-7xl font-black text-blue-700 my-4">{getResults()}</div>
-                            <button onClick={() => setView('home')} class="mt-8 w-full bg-slate-900 text-white py-4 rounded-xl font-bold">REPETIR</button>
+                        <div className="text-center py-12 animate-in zoom-in duration-500">
+                            <div className="text-slate-400 font-black uppercase tracking-widest text-xs mb-2">Resultado Estimado Fase Oposición</div>
+                            <div className="text-9xl font-black text-blue-700 mb-8 leading-none tracking-tighter">{getResults().score}</div>
+                            
+                            <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-12">
+                                <div className="bg-green-100 p-6 rounded-[2rem] border-b-4 border-green-200">
+                                    <div className="text-3xl font-black text-green-700">{getResults().hits}</div>
+                                    <div className="text-[10px] text-green-800 font-black uppercase tracking-widest">Aciertos</div>
+                                </div>
+                                <div className="bg-red-100 p-6 rounded-[2rem] border-b-4 border-red-200">
+                                    <div className="text-3xl font-black text-red-700">{getResults().fails}</div>
+                                    <div className="text-[10px] text-red-800 font-black uppercase tracking-widest">Errores</div>
+                                </div>
+                            </div>
+
+                            <button onClick={() => setView('home')} className="w-full max-w-sm bg-slate-900 text-white py-5 rounded-3xl font-black shadow-2xl hover:bg-blue-600 transition-all uppercase tracking-widest text-sm">VOLVER AL MENÚ</button>
                         </div>
                     )}
                     
-                    <footer class="mt-12 text-center text-[10px] text-gray-400">
-                        Basado en BOCyL 29/11/2024. Material gratuito de apoyo.
+                    <footer className="mt-20 text-center border-t border-slate-200 pt-10 pb-5">
+                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em] leading-relaxed">
+                            Basado en BOCyL 29/11/2024. Contenido gratuito de apoyo pedagógico sin vinculación oficial con la Junta de Castilla y León.
+                        </p>
                     </footer>
                 </div>
             );
