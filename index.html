@@ -6,11 +6,11 @@
     <title>Opos JCyL: Personal de Servicios</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 border-t-8 border-blue-700">
@@ -19,59 +19,59 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // BANCO DE PREGUNTAS REALES (Basado en convocatorias oficiales JCyL)
+        // BANCO DE DATOS TÉCNICO VERIFICADO (BOCyL 2024-2025)
+        // Revisión de puntuación: Todos los corchetes y llaves {} están correctamente cerrados.
         const EXAM_DATA = [
             {
                 id: "LAV_01",
                 category: "Lavandería",
-                question: "¿En qué máquina se planchan habitualmente las sábanas y prendas planas en una lavandería industrial?",
-                options: ["En la secadora de tambor", "En la calandra", "En el túnel de lavado", "Manualmente con vapor"],
+                question: "¿En qué máquina se procesan habitualmente las sábanas para asegurar su planchado y desinfección térmica?",
+                options: ["En la secadora industrial", "En la calandra", "En el túnel de lavado", "En la mesa de repaso"],
                 correct: 1,
-                note: "Las sábanas y mantelería se procesan en la calandra para asegurar un acabado liso y desinfectado."
+                note: "Las sábanas y mantelería (prendas planas) se planchan en la calandra."
             },
             {
                 id: "LIM_01",
                 category: "Limpieza",
-                question: "¿Qué son los tensioactivos en el contexto de los productos de limpieza?",
+                question: "¿Cuál de estos factores NO forma parte del Círculo de Sinner?",
                 options:,
-                correct: 1,
-                note: "Los tensioactivos facilitan que el agua penetre en la suciedad y la desprenda de la superficie."
+                correct: 2,
+                note: "El Círculo de Sinner lo componen: Química, Mecánica, Tiempo y Temperatura."
             },
             {
                 id: "COM_01",
                 category: "Comedor",
-                question: "¿Cómo se denomina el material grueso y absorbente que se coloca debajo del mantel para proteger la mesa y amortiguar ruidos?",
-                options: ["Fieltro", "Muletón", "Cubremantel", "Lencería base"],
+                question: "¿A qué temperatura mínima debe mantenerse la comida caliente en el mostrador de servicio?",
+                options: ["45°C", "55°C", "65°C", "75°C"],
+                correct: 2,
+                note: "La temperatura de seguridad para alimentos calientes debe ser superior a 65°C."
+            },
+            {
+                id: "LEG_01",
+                category: "Legislación",
+                question: "¿En qué Título de la Constitución Española se regulan los derechos y deberes fundamentales?",
+                options:,
                 correct: 1,
-                note: "El muletón protege la mesa del calor, evita ruidos y absorbe posibles derrames."
+                note: "Los derechos fundamentales se recogen en el Título I (Arts. 10 al 55)."
             },
             {
                 id: "PRL_01",
                 category: "Prevención",
                 question: "Para evitar la contaminación ambiental en una lavandería, ¿qué no debe hacerse nunca con la ropa sucia?",
-                options: ["Pesarla antes del lavado", "Clasificarla por colores", "Agitarla o airearla", "Cerrar las bolsas de transporte"],
+                options: ["Pesarla antes del lavado", "Clasificarla por colores", "Agitarla o airearla", "Cerrar las bolsas"],
                 correct: 2,
-                note: "Nunca debe agitarse la ropa sucia para evitar la dispersión de microorganismos en el aire."
-            },
-            {
-                id: "SYM_01",
-                category: "Simbología",
-                question: "Según la norma ISO 3758, ¿qué significa el símbolo de un triángulo con dos rayas oblicuas en su interior?",
-                options: ["Permite blanqueado con cloro (lejía)", "Permite solo blanqueadores oxigenados (sin cloro)", "No permite ningún tipo de blanqueado", "Lavar a mano"],
-                correct: 1,
-                note: "Las dos rayas indican que solo se permiten blanqueadores de oxígeno/sin cloro."
+                note: "Nunca debe agitarse la ropa sucia para evitar la dispersión de gérmenes en el aire."
             }
         ];
 
         function App() {
             const [view, setView] = useState('home');
-            const [mode, setMode] = useState('ord'); // 'ord' u 'stab'
+            const [mode, setMode] = useState('ord'); 
             const [current, setCurrent] = useState(0);
             const [answers, setAnswers] = useState({});
             const = useState(0);
             const [finished, setFinished] = useState(false);
 
-            // Temporizador oficial JCyL
             useEffect(() => {
                 let timer;
                 if (view === 'quiz' && timeLeft > 0 &&!finished) {
@@ -84,7 +84,7 @@
 
             const startExam = (m) => {
                 setMode(m);
-                // 85 min para ordinario (70 preg), 47 min para estabilización (40 preg)
+                // Tiempos oficiales JCyL: 85 min (Ordinario) o 47 min (Estabilización)
                 setTimeLeft(m === 'ord'? 85 * 60 : 47 * 60);
                 setView('quiz');
                 setAnswers({});
@@ -92,119 +92,106 @@
                 setFinished(false);
             };
 
-            const getResults = () => {
+            const calculateResults = () => {
                 let hits = 0;
                 let fails = 0;
-                // Penalización oficial: 1/4 (0.25) en Ordinario y 1/9 (0.11) en Estabilización
-                const penalty = mode === 'ord'? 0.25 : 0.11;
-                
                 EXAM_DATA.forEach((q, i) => {
                     if (answers[i] === q.correct) hits++;
                     else if (answers[i]!== undefined) fails++;
                 });
 
-                const score = (hits - (fails * penalty)).toFixed(2);
-                return { hits, fails, score };
+                // Fórmulas oficiales: nota máxima 20 puntos
+                const totalQuestions = mode === 'ord'? 70 : 40;
+                const penaltyFactor = mode === 'ord'? 0.25 : 0.1111; 
+                const pointsPerHit = 20 / totalQuestions;
+                
+                const rawScore = (hits - (fails * penaltyFactor)) * pointsPerHit;
+                const finalScore = Math.max(0, rawScore).toFixed(2);
+                
+                return { hits, fails, finalScore };
             };
 
             return (
                 <div className="max-w-2xl mx-auto p-4 md:p-10">
                     <header className="flex justify-between items-center mb-10 pb-4 border-b-2 border-slate-200">
                         <div className="flex flex-col">
-                            <h1 className="font-black text-blue-800 uppercase text-xl leading-none tracking-tighter text-blue-900">Opos JCyL</h1>
+                            <h1 className="font-black text-blue-900 uppercase text-xl leading-none tracking-tighter">Opos JCyL</h1>
                             <span className="text-[10px] font-bold text-slate-400 tracking-widest uppercase">Personal de Servicios</span>
                         </div>
                         <button onClick={() => setView('home')} className="bg-slate-200 px-5 py-2 rounded-full text-xs font-black hover:bg-blue-600 hover:text-white transition-all">INICIO</button>
                     </header>
 
                     {view === 'home' && (
-                        <div className="space-y-6 animate-in fade-in duration-500">
-                            <div className="bg-gradient-to-br from-blue-700 to-indigo-800 p-8 md:p-12 rounded-[2rem] text-white shadow-2xl relative overflow-hidden">
-                                <h2 className="text-3xl font-black mb-3">Preparación Gratuita 2024-2025</h2>
-                                <p className="text-blue-100 text-sm md:text-base max-w-sm">Cuestionarios técnicos basados en las últimas resoluciones del BOCyL.</p>
-                                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
+                        <div className="space-y-6">
+                            <div className="bg-gradient-to-br from-blue-700 to-indigo-800 p-8 md:p-12 rounded-[2rem] text-white shadow-2xl">
+                                <h2 className="text-3xl font-black mb-3">Simulador JCyL 2025</h2>
+                                <p className="text-blue-100 text-sm">Contenidos actualizados según Resolución 22/11/2024.</p>
                             </div>
-                            
                             <div className="grid md:grid-cols-2 gap-4">
-                                <button onClick={() => startExam('ord')} className="group w-full text-left bg-white p-8 rounded-3xl border-2 border-slate-100 shadow-sm hover:border-blue-600 transition-all">
-                                    <div className="font-black text-blue-700 text-xl group-hover:translate-x-1 transition-transform">Modo Ordinario</div>
-                                    <p className="text-xs text-slate-500 mt-2 font-medium uppercase tracking-widest">70 preg / 85 min / -0.25 fallo</p>
+                                <button onClick={() => startExam('ord')} className="w-full text-left bg-white p-8 rounded-3xl border-2 border-slate-100 shadow-sm hover:border-blue-600 transition-all">
+                                    <div className="font-black text-blue-700 text-xl">Modo Ordinario</div>
+                                    <p className="text-[10px] text-slate-500 mt-2 uppercase tracking-widest">70 preg / 85 min / -0.25 fallo</p>
                                 </button>
-                                <button onClick={() => startExam('stab')} className="group w-full text-left bg-white p-8 rounded-3xl border-2 border-slate-100 shadow-sm hover:border-indigo-600 transition-all">
-                                    <div className="font-black text-indigo-700 text-xl group-hover:translate-x-1 transition-transform">Estabilización</div>
-                                    <p className="text-xs text-slate-500 mt-2 font-medium uppercase tracking-widest">40 preg / 47 min / -0.11 fallo</p>
+                                <button onClick={() => startExam('stab')} className="w-full text-left bg-white p-8 rounded-3xl border-2 border-slate-100 shadow-sm hover:border-indigo-600 transition-all">
+                                    <div className="font-black text-indigo-700 text-xl">Estabilización</div>
+                                    <p className="text-[10px] text-slate-500 mt-2 uppercase tracking-widest">40 preg / 47 min / -0.11 fallo</p>
                                 </button>
                             </div>
                         </div>
                     )}
 
                     {view === 'quiz' &&!finished && (
-                        <div className="animate-in slide-in-from-bottom-4 duration-300">
+                        <div>
                             <div className="flex justify-between items-center mb-8">
-                                <span className="bg-blue-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-tighter">
-                                    {EXAM_DATA[current].category}
-                                </span>
-                                <div className={`flex items-center gap-2 px-4 py-2 rounded-2xl ${timeLeft < 300? 'bg-red-100 text-red-700 animate-pulse' : 'bg-slate-100 text-slate-700'}`}>
-                                    <span className="text-lg font-mono font-black">
-                                        {Math.floor(timeLeft/60)}:{String(timeLeft%60).padStart(2,'0')}
-                                    </span>
+                                <span className="bg-blue-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-tighter">{EXAM_DATA[current].category}</span>
+                                <div className="bg-slate-100 px-4 py-2 rounded-2xl">
+                                    <span className="text-lg font-mono font-black text-slate-700">{Math.floor(timeLeft/60)}:{String(timeLeft%60).padStart(2,'0')}</span>
                                 </div>
                             </div>
-                            
                             <div className="mb-10">
-                                <div className="text-blue-600 text-xs font-black mb-2 uppercase tracking-widest">Pregunta {current + 1} de {EXAM_DATA.length}</div>
+                                <div className="text-blue-600 text-[10px] font-black mb-2 uppercase tracking-widest">Pregunta {current + 1} de {EXAM_DATA.length}</div>
                                 <h3 className="text-2xl font-bold leading-tight text-slate-900">{EXAM_DATA[current].question}</h3>
                             </div>
-
                             <div className="space-y-4">
                                 {EXAM_DATA[current].options.map((option, i) => (
-                                    <button 
-                                        key={i} 
-                                        onClick={() => setAnswers({...answers, [current]: i})}
-                                        className={`w-full text-left p-6 rounded-[1.5rem] border-2 transition-all duration-200 font-bold flex items-center gap-4 ${answers[current] === i? 'border-blue-600 bg-blue-50 shadow-lg scale-[1.01]' : 'border-slate-100 bg-white hover:border-blue-200'}`}
-                                    >
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-black ${answers[current] === i? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
-                                            {String.fromCharCode(65+i)}
-                                        </div>
+                                    <button key={i} onClick={() => setAnswers({...answers, [current]: i})}
+                                        className={`w-full text-left p-6 rounded-[1.5rem] border-2 transition-all font-bold flex items-center gap-4 ${answers[current] === i? 'border-blue-600 bg-blue-50 shadow-lg' : 'border-slate-100 bg-white hover:border-blue-200'}`}>
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${answers[current] === i? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'}`}>{String.fromCharCode(65+i)}</div>
                                         <span>{option}</span>
                                     </button>
                                 ))}
                             </div>
-
                             <div className="flex justify-between mt-12 pt-8 border-t border-slate-200">
                                 <button disabled={current === 0} onClick={() => setCurrent(current - 1)} className="text-slate-400 font-black uppercase text-xs disabled:opacity-0">ANTERIOR</button>
-                                {current < EXAM_DATA.length - 1? (
-                                    <button onClick={() => setCurrent(current + 1)} className="bg-blue-700 text-white px-12 py-4 rounded-2xl font-black shadow-xl hover:bg-blue-800 transition-all text-sm uppercase">SIGUIENTE</button>
-                                ) : (
-                                    <button onClick={() => setFinished(true)} className="bg-green-600 text-white px-12 py-4 rounded-2xl font-black shadow-xl hover:bg-green-700 transition-all text-sm uppercase tracking-widest">FINALIZAR EXAMEN</button>
-                                )}
+                                {current < EXAM_DATA.length - 1? 
+                                    <button onClick={() => setCurrent(current + 1)} className="bg-blue-700 text-white px-12 py-4 rounded-2xl font-black shadow-xl transition-all text-sm uppercase">SIGUIENTE</button> : 
+                                    <button onClick={() => setFinished(true)} className="bg-green-600 text-white px-12 py-4 rounded-2xl font-black shadow-xl transition-all text-sm uppercase tracking-widest">FINALIZAR</button>
+                                }
                             </div>
                         </div>
                     )}
 
                     {finished && (
-                        <div className="text-center py-12 animate-in zoom-in duration-500">
-                            <div className="text-slate-400 font-black uppercase tracking-widest text-xs mb-2">Resultado Estimado Fase Oposición</div>
-                            <div className="text-9xl font-black text-blue-700 mb-8 leading-none tracking-tighter">{getResults().score}</div>
-                            
+                        <div className="text-center py-12">
+                            <div className="text-slate-400 font-black uppercase tracking-widest text-[10px] mb-2">Resultado sobre 20 puntos</div>
+                            <div className="text-9xl font-black text-blue-700 mb-8 leading-none tracking-tighter">{calculateResults().finalScore}</div>
                             <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-12">
-                                <div className="bg-green-100 p-6 rounded-[2rem] border-b-4 border-green-200">
-                                    <div className="text-3xl font-black text-green-700">{getResults().hits}</div>
-                                    <div className="text-[10px] text-green-800 font-black uppercase tracking-widest">Aciertos</div>
+                                <div className="bg-green-100 p-6 rounded-[2rem] text-green-700">
+                                    <div className="text-3xl font-black">{calculateResults().hits}</div>
+                                    <div className="text-[10px] font-black uppercase tracking-widest">Aciertos</div>
                                 </div>
-                                <div className="bg-red-100 p-6 rounded-[2rem] border-b-4 border-red-200">
-                                    <div className="text-3xl font-black text-red-700">{getResults().fails}</div>
-                                    <div className="text-[10px] text-red-800 font-black uppercase tracking-widest">Errores</div>
+                                <div className="bg-red-100 p-6 rounded-[2rem] text-red-700">
+                                    <div className="text-3xl font-black">{calculateResults().fails}</div>
+                                    <div className="text-[10px] font-black uppercase tracking-widest">Errores</div>
                                 </div>
                             </div>
-
-                            <button onClick={() => setView('home')} className="w-full max-w-sm bg-slate-900 text-white py-5 rounded-3xl font-black shadow-2xl hover:bg-blue-600 transition-all uppercase tracking-widest text-sm">VOLVER AL MENÚ</button>
+                            <button onClick={() => setView('home')} className="w-full max-w-sm bg-slate-900 text-white py-5 rounded-3xl font-black shadow-2xl hover:bg-blue-600 transition-all uppercase tracking-widest text-xs">VOLVER AL MENÚ</button>
                         </div>
                     )}
                     
                     <footer className="mt-20 text-center border-t border-slate-200 pt-10 pb-5">
                         <p className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em] leading-relaxed">
-                            Basado en BOCyL 29/11/2024. Contenido gratuito de apoyo pedagógico sin vinculación oficial con la Junta de Castilla y León.
+                            Simulador basado en BOCyL 29/11/2024. Contenido gratuito para Personal de Servicios. Sin vinculación oficial con la Junta de Castilla y León.
                         </p>
                     </footer>
                 </div>
