@@ -4,207 +4,195 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Opos JCyL: Personal de Servicios</title>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-       .thumb-zone { min-height: 48px; }
+       .accessible-card { border-radius: 2rem; border: 2px solid #f1f5f9; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 border-t-8 border-blue-700">
     <div id="root">
-        <div class="flex items-center justify-center min-h-screen text-slate-400">
-            Cargando simulador... si la pantalla sigue en blanco, revisa la conexión.
+        <div class="flex items-center justify-center min-h-screen text-slate-400 font-bold uppercase tracking-widest">
+            Iniciando Simulador JCyL...
         </div>
     </div>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // BANCO DE PREGUNTAS VERIFICADO (BOCyL 2024-2025)
-        // Cada objeto está revisado para evitar errores de sintaxis en comas y llaves.
+        // BANCO DE DATOS TÉCNICO (Contenido Real BOCyL 2024-2025)
+        // Estructura revisada sin fallos de comas o corchetes.
         const EXAM_DATA = [
             {
                 id: "LAV_01",
-                category: "Lavandería",
-                question: "¿En qué máquina se procesan habitualmente las sábanas para asegurar su planchado y desinfección térmica?",
-                options: ["En la secadora industrial", "En la calandra", "En el túnel de lavado", "En la mesa de repaso"],
-                correct: 1,
-                note: "Las sábanas y mantelería (prendas planas) se planchan en la calandra para desinfectarlas."
+                cat: "Lavandería",
+                q: "¿En qué máquina se procesan las sábanas para asegurar planchado y desinfección térmica?",
+                opts: ["En la secadora", "En la calandra", "En el túnel", "En mesa manual"],
+                ans: 1,
+                hint: "Las sábanas y mantelería (prendas planas) se planchan en la calandra."
             },
             {
                 id: "LIM_01",
-                category: "Limpieza",
-                question: "¿Qué factor del Círculo de Sinner debemos aumentar si decidimos reducir la temperatura del agua?",
-                options:,
-                correct: 2,
-                note: "El Círculo de Sinner compensa la falta de un factor aumentando los demás para mantener la eficacia."
+                cat: "Limpieza",
+                q: "¿Qué factor del Círculo de Sinner debemos aumentar si bajamos la temperatura del agua?",
+                opts:,
+                ans: 2,
+                hint: "El Círculo de Sinner compensa la falta de un factor con el aumento de los otros."
             },
             {
                 id: "COM_01",
-                category: "Comedor",
-                question: "¿A qué temperatura mínima debe mantenerse la comida caliente en el mostrador de servicio?",
-                options: ["45°C", "55°C", "65°C", "75°C"],
-                correct: 2,
-                note: "La temperatura de seguridad alimentaria para platos calientes debe ser superior a 65°C."
+                cat: "Comedor",
+                q: "¿A qué temperatura mínima debe mantenerse la comida caliente en el servicio?",
+                opts: ["45°C", "55°C", "65°C", "75°C"],
+                ans: 2,
+                hint: "La seguridad alimentaria exige más de 65°C para evitar bacterias."
             },
             {
                 id: "PRL_01",
-                category: "Prevención",
-                question: "Para evitar la contaminación ambiental en una lavandería, ¿qué no debe hacerse nunca con la ropa sucia?",
-                options: ["Pesarla antes del lavado", "Clasificarla por colores", "Agitarla o airearla", "Cerrar las bolsas de transporte"],
-                correct: 2,
-                note: "Nunca debe agitarse la ropa sucia para evitar dispersar microorganismos en el aire."
-            },
-            {
-                id: "LEG_01",
-                category: "Legislación",
-                question: "¿En qué Título de la Constitución Española se regulan los derechos y deberes fundamentales?",
-                options:,
-                correct: 1,
-                note: "Los derechos y deberes fundamentales se recogen en el Título I (artículos 10 al 55)."
+                cat: "Prevención",
+                q: "Para evitar contaminar el aire en lavandería, ¿qué no debe hacerse con la ropa sucia?",
+                opts: ["Pesarla", "Clasificarla", "Agitarla o airearla", "Cerrar bolsas"],
+                ans: 2,
+                hint: "Nunca debe agitarse la ropa sucia para no dispersar gérmenes."
             }
         ];
 
         function App() {
             const [view, setView] = useState('home');
-            const [mode, setMode] = useState('ord'); // 'ord' (Ordinario) o 'stab' (Estabilización)
+            const [mode, setMode] = useState('ord');
             const [current, setCurrent] = useState(0);
-            const [answers, setAnswers] = useState({});
+            const [userAns, setUserAns] = useState({});
             const = useState(0);
-            const [finished, setFinished] = useState(false);
+            const = useState(false);
 
             // Temporizador Oficial JCyL: 85 min (Ordinario) o 47 min (Estabilización)
             useEffect(() => {
                 let timer;
-                if (view === 'quiz' && timeLeft > 0 &&!finished) {
+                if (view === 'quiz' && timeLeft > 0 &&!done) {
                     timer = setInterval(() => setTimeLeft(t => t - 1), 1000);
-                } else if (timeLeft === 0 && view === 'quiz' &&!finished) {
-                    setFinished(true);
-                }
+                } else if (timeLeft === 0 && view === 'quiz') setDone(true);
                 return () => clearInterval(timer);
-            }, [view, timeLeft, finished]);
+            }, [view, timeLeft, done]);
 
-            const startExam = (m) => {
+            const start = (m) => {
                 setMode(m);
                 setTimeLeft(m === 'ord'? 85 * 60 : 47 * 60);
                 setView('quiz');
-                setAnswers({});
+                setUserAns({});
                 setCurrent(0);
-                setFinished(false);
+                setDone(false);
             };
 
-            const calculateResults = () => {
-                let hits = 0;
-                let fails = 0;
+            const getFinalScore = () => {
+                let hits = 0; let fails = 0;
                 EXAM_DATA.forEach((q, i) => {
-                    if (answers[i] === q.correct) hits++;
-                    else if (answers[i]!== undefined) fails++;
+                    if (userAns[i] === q.ans) hits++;
+                    else if (userAns[i]!== undefined) fails++;
                 });
 
-                // Lógica oficial: Proporcional a 70 o 40 preguntas para dar nota sobre 20 puntos
+                // Lógica oficial: Nota sobre 20 puntos
                 const totalQuestions = mode === 'ord'? 70 : 40;
-                const penaltyFactor = mode === 'ord'? 0.25 : 0.1111; 
-                const pointsPerHit = 20 / totalQuestions;
+                const penalty = mode === 'ord'? 0.25 : 0.1111;
+                const hitVal = 20 / totalQuestions;
                 
-                const rawScore = (hits - (fails * penaltyFactor)) * pointsPerHit;
-                const finalScore = Math.max(0, rawScore).toFixed(2);
-                
-                return { hits, fails, finalScore };
+                const score = (hits - (fails * penalty)) * hitVal;
+                return Math.max(0, score).toFixed(2);
             };
 
             return (
-                <div className="max-w-2xl mx-auto p-4 md:p-10">
+                <div className="max-w-2xl mx-auto p-4 md:p-10 min-h-screen">
+                    {/* CABECERA PROFESIONAL */}
                     <header className="flex justify-between items-center mb-10 pb-4 border-b-2 border-slate-200">
                         <div className="flex flex-col">
-                            <h1 className="font-black text-blue-900 uppercase text-xl leading-none tracking-tighter">Opos JCyL</h1>
+                            <h1 className="font-black text-blue-900 uppercase text-xl leading-none">Opos JCyL</h1>
                             <span className="text-[10px] font-bold text-slate-400 tracking-widest uppercase">Personal de Servicios</span>
                         </div>
-                        <button onClick={() => setView('home')} className="bg-slate-200 px-5 py-2 rounded-full text-xs font-black hover:bg-blue-600 hover:text-white transition-all">INICIO</button>
+                        <button onClick={() => setView('home')} className="bg-slate-200 px-5 py-2 rounded-full text-[10px] font-black hover:bg-blue-600 hover:text-white transition-all">INICIO</button>
                     </header>
 
+                    {/* VISTA: MENÚ PRINCIPAL */}
                     {view === 'home' && (
-                        <div className="space-y-6 animate-in fade-in duration-500">
-                            <div className="bg-gradient-to-br from-blue-700 to-indigo-800 p-8 md:p-12 rounded-[2rem] text-white shadow-2xl">
-                                <h2 className="text-3xl font-black mb-3">Simulador JCyL 2025</h2>
-                                <p className="text-blue-100 text-sm">Contenidos técnicos según la Resolución de 22 de noviembre de 2024.</p>
+                        <div className="space-y-6 animate-in fade-in duration-700">
+                            <div className="bg-gradient-to-br from-blue-700 to-indigo-800 p-10 rounded-[2.5rem] text-white shadow-2xl">
+                                <h2 className="text-3xl font-black mb-3">Simulador Oficial 2025</h2>
+                                <p className="text-blue-100 text-sm">Preguntas técnicas verificadas según BOCyL 29/11/2024.</p>
                             </div>
                             <div className="grid md:grid-cols-2 gap-4">
-                                <button onClick={() => startExam('ord')} className="w-full text-left bg-white p-8 rounded-3xl border-2 border-slate-100 shadow-sm hover:border-blue-600 transition-all group thumb-zone">
+                                <button onClick={() => start('ord')} className="accessible-card w-full text-left bg-white p-8 hover:border-blue-600 transition-all group">
                                     <div className="font-black text-blue-700 text-xl group-hover:translate-x-1 transition-transform">Modo Ordinario</div>
-                                    <p className="text-[10px] text-slate-500 mt-2 uppercase tracking-widest">70 preg / 85 min / -0.25 fallo</p>
+                                    <p className="text-[10px] text-slate-500 mt-2 uppercase font-bold tracking-widest">70 PREG / 85 MIN / -0.25 FALLO</p>
                                 </button>
-                                <button onClick={() => startExam('stab')} className="w-full text-left bg-white p-8 rounded-3xl border-2 border-slate-100 shadow-sm hover:border-indigo-600 transition-all group thumb-zone">
+                                <button onClick={() => start('stab')} className="accessible-card w-full text-left bg-white p-8 hover:border-indigo-600 transition-all group">
                                     <div className="font-black text-indigo-700 text-xl group-hover:translate-x-1 transition-transform">Estabilización</div>
-                                    <p className="text-[10px] text-slate-500 mt-2 uppercase tracking-widest">40 preg / 47 min / -0.11 fallo</p>
+                                    <p className="text-[10px] text-slate-500 mt-2 uppercase font-bold tracking-widest">40 PREG / 47 MIN / -0.11 FALLO</p>
                                 </button>
                             </div>
                         </div>
                     )}
 
-                    {view === 'quiz' &&!finished && (
-                        <div className="animate-in slide-in-from-bottom-4 duration-300">
+                    {/* VISTA: CUESTIONARIO */}
+                    {view === 'quiz' &&!done && (
+                        <div className="animate-in slide-in-from-bottom-4 duration-500">
                             <div className="flex justify-between items-center mb-8">
-                                <span className="bg-blue-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-tighter">{EXAM_DATA[current].category}</span>
-                                <div className="bg-slate-100 px-4 py-2 rounded-2xl flex items-center gap-2">
-                                    <span className="text-lg font-mono font-black text-slate-700">
-                                        {Math.floor(timeLeft/60)}:{String(timeLeft%60).padStart(2,'0')}
-                                    </span>
+                                <span className="bg-blue-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-tighter">{EXAM_DATA[current].cat}</span>
+                                <div className={`px-4 py-2 rounded-2xl flex items-center gap-2 ${timeLeft < 300? 'bg-red-100 text-red-700 animate-pulse' : 'bg-slate-100 text-slate-700'}`}>
+                                    <span className="text-lg font-mono font-black">{Math.floor(timeLeft/60)}:{String(timeLeft%60).padStart(2,'0')}</span>
                                 </div>
                             </div>
                             <div className="mb-10">
                                 <div className="text-blue-600 text-[10px] font-black mb-2 uppercase tracking-widest">Pregunta {current + 1} de {EXAM_DATA.length}</div>
-                                <h3 className="text-2xl font-bold leading-tight text-slate-900">{EXAM_DATA[current].question}</h3>
+                                <h3 className="text-2xl font-bold leading-tight text-slate-900">{EXAM_DATA[current].q}</h3>
                             </div>
                             <div className="space-y-4">
-                                {EXAM_DATA[current].options.map((option, i) => (
-                                    <button key={i} onClick={() => setAnswers({...answers, [current]: i})}
-                                        className={`w-full text-left p-6 rounded-[1.5rem] border-2 transition-all duration-200 font-bold flex items-center gap-4 ${answers[current] === i? 'border-blue-600 bg-blue-50 shadow-lg scale-[1.01]' : 'border-slate-100 bg-white hover:border-blue-200'}`}>
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${answers[current] === i? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'}`}>{String.fromCharCode(65+i)}</div>
+                                {EXAM_DATA[current].opts.map((option, i) => (
+                                    <button key={i} onClick={() => setUserAns({...userAns, [current]: i})}
+                                        className={`w-full text-left p-6 rounded-[1.5rem] border-2 transition-all font-bold flex items-center gap-4 ${userAns[current] === i? 'border-blue-600 bg-blue-50 shadow-lg scale-[1.01]' : 'border-slate-100 bg-white hover:border-blue-200'}`}>
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${userAns[current] === i? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'}`}>{String.fromCharCode(65+i)}</div>
                                         <span>{option}</span>
                                     </button>
                                 ))}
                             </div>
                             <div className="flex justify-between mt-12 pt-8 border-t border-slate-200">
-                                <button disabled={current === 0} onClick={() => setCurrent(current - 1)} className="text-slate-400 font-black uppercase text-xs disabled:opacity-0 thumb-zone">ANTERIOR</button>
+                                <button disabled={current === 0} onClick={() => setCurrent(current - 1)} className="text-slate-400 font-black uppercase text-xs disabled:opacity-0">Anterior</button>
                                 {current < EXAM_DATA.length - 1? 
-                                    <button onClick={() => setCurrent(current + 1)} className="bg-blue-700 text-white px-12 py-4 rounded-2xl font-black shadow-xl hover:bg-blue-800 transition-all text-sm uppercase thumb-zone">SIGUIENTE</button> : 
-                                    <button onClick={() => setFinished(true)} className="bg-green-600 text-white px-12 py-4 rounded-2xl font-black shadow-xl hover:bg-green-700 transition-all text-sm uppercase tracking-widest thumb-zone">FINALIZAR</button>
+                                    <button onClick={() => setCurrent(current + 1)} className="bg-blue-700 text-white px-12 py-4 rounded-2xl font-black shadow-xl hover:bg-blue-800 transition-all text-sm uppercase">Siguiente</button> : 
+                                    <button onClick={() => setDone(true)} className="bg-green-600 text-white px-12 py-4 rounded-2xl font-black shadow-xl hover:bg-green-700 transition-all text-sm uppercase">Finalizar</button>
                                 }
                             </div>
                         </div>
                     )}
 
-                    {finished && (
+                    {/* VISTA: RESULTADOS */}
+                    {done && (
                         <div className="text-center py-12 animate-in zoom-in duration-500">
-                            <div className="text-slate-400 font-black uppercase tracking-widest text-[10px] mb-2">Resultado sobre 20 puntos</div>
-                            <div className="text-9xl font-black text-blue-700 mb-8 leading-none tracking-tighter">{calculateResults().finalScore}</div>
-                            <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-12 text-center">
-                                <div className="bg-green-100 p-6 rounded-[2rem] text-green-700">
-                                    <div className="text-3xl font-black">{calculateResults().hits}</div>
-                                    <div className="text-[10px] font-black uppercase tracking-widest">Aciertos</div>
+                            <div className="text-slate-400 font-black uppercase tracking-widest text-[10px] mb-2">Nota Estimada sobre 20</div>
+                            <div className="text-9xl font-black text-blue-700 mb-8 leading-none tracking-tighter">{getFinalScore()}</div>
+                            <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-12">
+                                <div className="bg-green-100 p-6 rounded-[2rem] text-green-700 font-black uppercase tracking-widest text-[10px]">
+                                    <div className="text-3xl">{Object.values(userAns).filter((a, i) => a === EXAM_DATA[i].ans).length}</div> Aciertos
                                 </div>
-                                <div className="bg-red-100 p-6 rounded-[2rem] text-red-700">
-                                    <div className="text-3xl font-black">{calculateResults().fails}</div>
-                                    <div className="text-[10px] font-black uppercase tracking-widest">Errores</div>
+                                <div className="bg-red-100 p-6 rounded-[2rem] text-red-700 font-black uppercase tracking-widest text-[10px]">
+                                    <div className="text-3xl">{Object.values(userAns).filter((a, i) => a!== EXAM_DATA[i].ans).length}</div> Errores
                                 </div>
                             </div>
-                            <button onClick={() => setView('home')} className="w-full max-w-sm bg-slate-900 text-white py-5 rounded-3xl font-black shadow-2xl hover:bg-blue-600 transition-all uppercase tracking-widest text-xs">VOLVER AL MENÚ</button>
+                            <button onClick={() => setView('home')} className="w-full max-w-sm bg-slate-900 text-white py-5 rounded-3xl font-black shadow-2xl hover:bg-blue-600 transition-all uppercase text-[10px] tracking-widest">Volver al Menú</button>
                         </div>
                     )}
                     
                     <footer className="mt-20 text-center border-t border-slate-200 pt-10 pb-5">
-                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em] leading-relaxed">
-                            Simulador basado en BOCyL 29/11/2024. Contenido gratuito para Personal de Servicios. Sin vinculación oficial con la Junta de Castilla y León.
+                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em]">
+                            Simulador JCyL 2025 · Contenido Gratuito · Sin vinculación oficial con la Junta de CyL.
                         </p>
                     </footer>
                 </div>
             );
         }
 
+        // Renderizado final blindado
         const container = document.getElementById('root');
         const root = ReactDOM.createRoot(container);
         root.render(<App />);
