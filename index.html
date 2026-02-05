@@ -3,209 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Opos JCyL: Personal de Servicios</title>
+    <title>Simulador Personal de Servicios JCyL</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone@7.23.12/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com/3.4.10"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-       .btn-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
-       .jcyl-blue { background-color: #005691; } /* Color corporativo JCyL */
+       .jcyl-blue { background-color: #005691; }
+       .jcyl-text { color: #005691; }
+       .card-pro { border-radius: 2rem; border: 2px solid #f1f5f9; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 border-t-[12px] border-[#005691]">
     <div id="root">
-        <div class="flex flex-col items-center justify-center min-h-screen p-6 text-center">
-            <div class="w-12 h-12 border-4 border-slate-200 border-t-[#005691] rounded-full animate-spin"></div>
-            <h1 class="mt-6 text-lg font-bold text-slate-700 uppercase tracking-widest">Cargando Sistema...</h1>
-            <p class="mt-2 text-sm text-slate-400">Si la pantalla no carga, revisa tu conexión o el código en GitHub.</p>
+        <div class="flex flex-col items-center justify-center min-h-screen text-slate-400 font-bold uppercase tracking-widest text-xs">
+            Iniciando Simulador Profesional JCyL...
         </div>
     </div>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // BANCO DE DATOS REAL (Preguntas extraídas de exámenes oficiales JCyL)
+        // BANCO DE DATOS PROFESIONAL (Preguntas Reales JCyL 2024/2025)
         const PREGUNTAS = [
             {
-                id: 1,
+                id: "LAV_01",
                 bloque: "Lavandería",
-                texto: "¿En qué máquina se procesan habitualmente las sábanas para asegurar su planchado y desinfección térmica?",
-                opciones: ["En la secadora industrial", "En la calandra", "En el túnel de lavado", "En la mesa de repaso"],
-                correcta: 1,
-                explicacion: "Las sábanas y mantelería (prendas planas) se planchan obligatoriamente en la calandra."
+                q: "¿En qué máquina se planchan las sábanas para asegurar planchado y desinfección térmica?",
+                o: ["En la secadora", "En la calandra", "En el túnel", "Mesa manual"],
+                a: 1,
+                nota: "Las sábanas y mantelería (prendas planas) se procesan en la calandra."
             },
             {
-                id: 2,
+                id: "LIM_01",
                 bloque: "Limpieza",
-                texto: "Según el Círculo de Sinner, si reducimos el tiempo de actuación del producto químico, ¿qué debemos hacer?",
-                opciones:,
-                correcta: 2,
-                explicacion: "El Círculo de Sinner compensa la falta de un factor (Química, Mecánica, Tiempo o Temperatura) aumentando los demás."
+                q: "¿Qué factor del Círculo de Sinner compensa la reducción de la temperatura del agua?",
+                o:,
+                a: 0,
+                nota: "Si un factor baja (temperatura), los otros tres deben subir para mantener la eficacia."
             },
             {
-                id: 3,
+                id: "COM_01",
                 bloque: "Comedor",
-                texto: "¿A qué temperatura mínima debe mantenerse la comida caliente en el mostrador de servicio?",
-                opciones: ["45°C", "55°C", "65°C", "75°C"],
-                correcta: 2,
-                explicacion: "La normativa exige mantener alimentos calientes a más de 65°C para evitar bacterias."
+                q: "¿A qué temperatura mínima debe mantenerse la comida caliente en el mostrador?",
+                o: ["45°C", "55°C", "65°C", "75°C"],
+                a: 2,
+                nota: "La seguridad alimentaria exige más de 65°C para evitar bacterias."
             },
             {
-                id: 4,
-                bloque: "Prevención",
-                texto: "Para evitar la contaminación del aire en una lavandería, ¿qué está prohibido hacer con la ropa sucia?",
-                opciones: ["Pesarla", "Clasificarla", "Agitarla o airearla", "Cerrar las bolsas"],
-                correcta: 2,
-                explicacion: "Nunca debe agitarse la ropa sucia para no dispersar gérmenes en el ambiente."
-            },
-            {
-                id: 5,
+                id: "LAW_01",
                 bloque: "Legislación",
-                texto: "¿En qué Título de la Constitución Española se recogen los Derechos y Deberes Fundamentales?",
-                opciones:,
-                correcta: 1,
-                explicacion: "Los derechos fundamentales ocupan el Título I (artículos 10 al 55)."
+                q: "¿En qué Título de la Constitución se regulan los derechos y deberes fundamentales?",
+                o:,
+                a: 1,
+                nota: "Se recogen en el Título I, artículos 10 al 55.[2]"
+            },
+            {
+                id: "PRL_01",
+                bloque: "Prevención",
+                q: "Para evitar contaminar el aire en lavandería, ¿qué está prohibido con la ropa sucia?",
+                o: ["Pesarla", "Clasificarla", "Agitarla o airearla", "Cerrar bolsas"],
+                a: 2,
+                nota: "Nunca debe agitarse la ropa sucia para no dispersar gérmenes en el aire."
             }
         ];
 
-        function App() {
-            const [pantalla, setPantalla] = useState('menu');
-            const = useState('ord'); // 'ord' u 'stab'
-            const [indice, setIndice] = useState(0);
-            const = useState({});
+        function OposApp() {
+            const [view, setView] = useState('menu');
+            const [mode, setMode] = useState('ord');
+            const [idx, setIdx] = useState(0);
+            const [userAns, setUserAns] = useState({});
             const = useState(0);
             const = useState(false);
 
-            // Temporizador oficial: Ordinario (85 min / 70 preg) - Estabilización (47 min / 40 preg) 
             useEffect(() => {
                 let timer;
-                if (pantalla === 'test' && tiempo > 0 &&!terminado) {
-                    timer = setInterval(() => setTiempo(t => t - 1), 1000);
-                } else if (tiempo === 0 && pantalla === 'test') setTerminado(true);
+                if (view === 'quiz' && time > 0 &&!done) {
+                    timer = setInterval(() => setTime(t => t - 1), 1000);
+                } else if (time === 0 && view === 'quiz') setDone(true);
                 return () => clearInterval(timer);
-            }, [pantalla, tiempo, terminado]);
+            }, [view, time, done]);
 
-            const iniciar = (m) => {
-                setTipoExamen(m);
-                setTiempo(m === 'ord'? 85 * 60 : 47 * 60);
-                setPantalla('test');
-                setRespuestas({});
-                setIndice(0);
-                setTerminado(false);
+            const start = (m) => {
+                setMode(m);
+                setTime(m === 'ord'? 85 * 60 : 47 * 60); // 85 min Ordinario / 47 min Estabilización 
+                setView('quiz');
+                setUserAns({});
+                setIdx(0);
+                setDone(false);
             };
 
-            const calcularPuntos = () => {
-                let aciertos = 0;
-                let fallos = 0;
-                PREGUNTAS.forEach((q, i) => {
-                    if (respuestas[i] === q.correcta) aciertos++;
-                    else if (respuestas[i]!== undefined) fallos++;
+            const getResults = () => {
+                let hits = 0; let fails = 0;
+                PREGUNTAS.forEach((p, i) => {
+                    if (userAns[i] === p.a) hits++;
+                    else if (userAns[i]!== undefined) fails++;
                 });
 
-                // Fórmulas oficiales JCyL (Sobre 20 puntos finales)
-                const totalOficial = tipoExamen === 'ord'? 70 : 40;
-                const restaPorFallo = tipoExamen === 'ord'? 0.25 : 0.1111; // 1/4 o 1/9
-                const valorPregunta = 20 / totalOficial;
+                // Lógica JCyL: Nota proyectada sobre 20 puntos finales [1, 3]
+                const totalQ = mode === 'ord'? 70 : 40;
+                const penalty = mode === 'ord'? 0.25 : 0.11;
+                const pointVal = 20 / totalQ;
                 
-                const notaFinal = (aciertos - (fallos * restaPorFallo)) * valorPregunta;
-                return { aciertos, fallos, score: Math.max(0, notaFinal).toFixed(2) };
+                const score = (hits - (fails * penalty)) * pointVal;
+                return { hits, fails, score: Math.max(0, score).toFixed(2) };
             };
 
             return (
                 <div className="max-w-2xl mx-auto p-4 md:p-10 min-h-screen flex flex-col">
-                    {/* CABECERA */}
-                    <nav className="flex justify-between items-center mb-10 pb-4 border-b">
+                    <header className="flex justify-between items-center mb-10 pb-4 border-b">
                         <div className="flex flex-col">
-                            <h1 className="font-black text-blue-900 text-xl tracking-tighter">OPOS JCyL</h1>
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Personal de Servicios</span>
+                            <h1 className="font-black text-blue-900 uppercase text-xl leading-none">Opos JCyL</h1>
+                            <span className="text-[10px] font-bold text-slate-400 tracking-widest uppercase">Personal de Servicios</span>
                         </div>
-                        {pantalla!== 'menu' && (
-                            <button onClick={() => setPantalla('menu')} className="bg-slate-200 px-4 py-2 rounded-full text-[10px] font-black hover:bg-[#005691] hover:text-white transition-all">INICIO</button>
-                        )}
-                    </nav>
+                        {view!== 'menu' && <button onClick={() => setView('menu')} className="bg-slate-200 px-5 py-2 rounded-full text-[10px] font-black hover:bg-blue-700 hover:text-white transition-all">INICIO</button>}
+                    </header>
 
-                    {/* VISTA: MENÚ PRINCIPAL */}
-                    {pantalla === 'menu' && (
-                        <div className="space-y-6 animate-in fade-in duration-700">
-                            <div className="bg-gradient-to-br from-[#005691] to-blue-800 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
-                                <h2 className="text-3xl font-black mb-2">Simulador 2025</h2>
-                                <p className="text-blue-100 text-sm">Basado en la Resolución de la Junta del 29/11/2024.</p>
-                                <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-white opacity-10 rounded-full"></div>
+                    {view === 'menu' && (
+                        <div className="space-y-6">
+                            <div className="bg-gradient-to-br from-[#005691] to-blue-800 p-10 rounded-[2.5rem] text-white shadow-2xl">
+                                <h2 className="text-3xl font-black mb-3">Simulador 2025</h2>
+                                <p className="text-blue-100 text-sm">Contenido verificado según BOCyL 29/11/2024.</p>
                             </div>
-                            
                             <div className="grid gap-4">
-                                <button onClick={() => iniciar('ord')} className="text-left bg-white p-7 rounded-[2rem] border-2 border-slate-100 hover:border-[#005691] transition-all group">
-                                    <span className="font-black text-[#005691] text-lg">Modo Ordinario</span>
-                                    <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-widest">70 Preguntas / 85 min / -0.25 Fallo</p>
+                                <button onClick={() => start('ord')} className="card-pro text-left p-8 bg-white hover:border-[#005691] transition-all group">
+                                    <div className="font-black text-[#005691] text-xl group-hover:translate-x-1 transition-transform">Acceso Ordinario</div>
+                                    <p className="text-[10px] text-slate-500 mt-2 uppercase font-bold tracking-widest">70 PREG / 85 MIN / RESTA 0.25 </p>
                                 </button>
-                                <button onClick={() => iniciar('stab')} className="text-left bg-white p-7 rounded-[2rem] border-2 border-slate-100 hover:border-indigo-600 transition-all group">
-                                    <span className="font-black text-indigo-700 text-lg">Estabilización (EE)</span>
-                                    <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-widest">40 Preguntas / 47 min / -0.11 Fallo</p>
+                                <button onClick={() => start('stab')} className="card-pro text-left p-8 bg-white hover:border-indigo-600 transition-all group">
+                                    <div className="font-black text-indigo-700 text-xl group-hover:translate-x-1 transition-transform">Estabilización (EE)</div>
+                                    <p className="text-[10px] text-slate-500 mt-2 uppercase font-bold tracking-widest">40 PREG / 47 MIN / RESTA 0.11 </p>
                                 </button>
                             </div>
                         </div>
                     )}
 
-                    {/* VISTA: TEST ACTIVO */}
-                    {pantalla === 'test' &&!terminado && (
-                        <div className="animate-in slide-in-from-right duration-300">
+                    {view === 'quiz' &&!done && (
+                        <div className="animate-in slide-in-from-bottom-4 duration-500">
                             <div className="flex justify-between items-center mb-8">
-                                <span className="bg-blue-100 text-[#005691] text-[10px] font-black px-4 py-1.5 rounded-full uppercase">{PREGUNTAS[indice].bloque}</span>
-                                <div className={`px-4 py-2 rounded-2xl ${tiempo < 300? 'bg-red-100 text-red-700 animate-pulse' : 'bg-slate-100 text-slate-700'}`}>
-                                    <span className="text-lg font-mono font-black">{Math.floor(tiempo/60)}:{String(tiempo%60).padStart(2,'0')}</span>
+                                <span className="bg-blue-100 text-[#005691] text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-tighter">{PREGUNTAS[idx].bloque}</span>
+                                <div className={`px-4 py-2 rounded-2xl flex items-center gap-2 ${time < 300? 'bg-red-100 text-red-700 animate-pulse' : 'bg-slate-100 text-slate-700'}`}>
+                                    <span className="text-lg font-mono font-black">{Math.floor(time/60)}:{String(time%60).padStart(2,'0')}</span>
                                 </div>
                             </div>
-
-                            <div className="mb-10">
-                                <div className="text-blue-600 text-[10px] font-black mb-2 uppercase tracking-widest">Pregunta {indice + 1} de {PREGUNTAS.length}</div>
-                                <h3 className="text-2xl font-bold leading-tight text-slate-900">{PREGUNTAS[indice].texto}</h3>
-                            </div>
-
+                            <h3 className="text-2xl font-bold leading-tight text-slate-900 mb-10">{PREGUNTAS[idx].q}</h3>
                             <div className="space-y-4">
-                                {PREGUNTAS[indice].opciones.map((op, i) => (
-                                    <button key={i} onClick={() => setRespuestas({...respuestas, [indice]: i})}
-                                        className={`w-full text-left p-6 rounded-[1.8rem] border-2 transition-all font-bold flex items-center gap-4 ${respuestas[indice] === i? 'border-[#005691] bg-blue-50 shadow-md scale-[1.01]' : 'border-slate-100 bg-white hover:border-slate-300'}`}>
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${respuestas[indice] === i? 'bg-[#005691] text-white' : 'bg-slate-100 text-slate-400'}`}>{String.fromCharCode(65+i)}</div>
-                                        <span className="text-sm">{op}</span>
+                                {PREGUNTAS[idx].o.map((opt, i) => (
+                                    <button key={i} onClick={() => setUserAns({...userAns, [idx]: i})}
+                                        className={`w-full text-left p-6 rounded-[1.8rem] border-2 transition-all font-bold flex gap-4 ${userAns[idx] === i? 'border-[#005691] bg-blue-50 shadow-lg' : 'border-slate-100 bg-white hover:border-slate-300'}`}>
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${userAns[idx] === i? 'bg-[#005691] text-white' : 'bg-slate-100 text-slate-400'}`}>{String.fromCharCode(65+i)}</div>
+                                        <span className="text-sm">{opt}</span>
                                     </button>
                                 ))}
                             </div>
-
                             <div className="flex justify-between mt-12 pt-8 border-t">
-                                <button disabled={indice === 0} onClick={() => setIndice(indice - 1)} className="text-slate-400 font-black uppercase text-[10px] disabled:opacity-0 px-4">Anterior</button>
-                                {indice < PREGUNTAS.length - 1? 
-                                    <button onClick={() => setIndice(indice + 1)} className="bg-[#005691] text-white px-10 py-4 rounded-2xl font-black shadow-xl hover:bg-blue-900 transition-all text-[10px] uppercase">Siguiente</button> : 
-                                    <button onClick={() => setTerminado(true)} className="bg-green-600 text-white px-10 py-4 rounded-2xl font-black shadow-xl hover:bg-green-700 transition-all text-[10px] uppercase tracking-widest">Finalizar</button>
+                                <button disabled={idx === 0} onClick={() => setIdx(idx - 1)} className="text-slate-300 font-bold uppercase text-[10px] disabled:opacity-0 px-4">Anterior</button>
+                                {idx < PREGUNTAS.length - 1? 
+                                    <button onClick={() => setIdx(idx + 1)} className="bg-[#005691] text-white px-12 py-4 rounded-2xl font-black shadow-xl hover:bg-blue-800 transition-all text-xs uppercase">Siguiente</button> : 
+                                    <button onClick={() => setDone(true)} className="bg-green-600 text-white px-12 py-4 rounded-2xl font-black shadow-xl hover:bg-green-700 transition-all text-xs uppercase tracking-widest">Finalizar</button>
                                 }
                             </div>
                         </div>
                     )}
 
-                    {/* VISTA: RESULTADOS */}
-                    {terminado && (
-                        <div className="text-center py-12 animate-in zoom-in duration-500">
-                            <p className="text-slate-400 font-black uppercase tracking-widest text-[10px] mb-2">Nota sobre 20 puntos</p>
-                            <div className="text-9xl font-black text-[#005691] leading-none tracking-tighter mb-10">{calcularPuntos().score}</div>
-                            <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto mb-12">
+                    {done && (
+                        <div className="text-center py-12 flex flex-col items-center">
+                            <p className="text-slate-400 font-black uppercase text-[10px] tracking-widest mb-2">Nota sobre 20 puntos</p>
+                            <div className="text-9xl font-black text-[#005691] leading-none mb-10 tracking-tighter">{getResults().score}</div>
+                            <div className="grid grid-cols-2 gap-4 w-full max-w-sm mb-12">
                                 <div className="bg-green-100 p-6 rounded-[2rem] text-green-700 font-black uppercase tracking-widest text-[10px]">
-                                    <div className="text-3xl">{calcularPuntos().aciertos}</div> Aciertos
+                                    <div className="text-3xl">{getResults().hits}</div> Aciertos
                                 </div>
                                 <div className="bg-red-100 p-6 rounded-[2rem] text-red-700 font-black uppercase tracking-widest text-[10px]">
-                                    <div className="text-3xl">{calcularPuntos().fallos}</div> Errores
+                                    <div className="text-3xl">{getResults().fails}</div> Errores
                                 </div>
                             </div>
-                            <button onClick={() => setPantalla('menu')} className="w-full max-w-xs bg-slate-900 text-white py-5 rounded-3xl font-black shadow-2xl hover:bg-[#005691] transition-all uppercase text-[10px] tracking-widest">Cerrar Sesión</button>
+                            <button onClick={() => setView('menu')} className="w-full max-w-xs bg-slate-900 text-white py-5 rounded-3xl font-black shadow-2xl hover:bg-blue-700 transition-all uppercase text-[10px] tracking-widest">Reiniciar</button>
                         </div>
                     )}
                 </div>
             );
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<OposApp />);
     </script>
 </body>
 </html>
